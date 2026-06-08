@@ -1,0 +1,17 @@
+name = "promarketingstore-backend"
+main = "src/index.ts"
+compatibility_date = "2024-09-25"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pms"
+database_id = "placeholder"
+
+[vars]
+CORS_ORIGIN = "https://promarketingstore.pages.dev"
+
+# Secrets (set via `wrangler secret put`):
+#   SESSION_SIGNING_KEY       (signs PMS session JWTs)
+#   GOOGLE_CLIENT_ID          (Google OAuth app)
+#   GOOGLE_CLIENT_SECRET      (Google OAuth app)
