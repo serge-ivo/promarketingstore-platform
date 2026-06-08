@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PMS Console — ProMarketingStore</title>
+<meta name="description" content="ProMarketingStore console: create campaigns, chat with AI, manage content calendar, browse marketplace.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#fafafa;--text:#1a1a1a;--muted:#6b7280;--panel:#ffffff;--line:#e5e7eb;--accent:#f97316;--accent2:#ef4444;--grad:linear-gradient(135deg,#f97316,#ef4444);--sidebar:260px;--radius:10px}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,textarea,select{font-family:inherit;font-size:.85rem}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+
+/* Sidebar */
+.sidebar{width:var(--sidebar);background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:1.2rem 1rem .8rem;display:flex;align-items:center;gap:.5rem}
+.brand-icon{width:32px;height:32px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:800;flex-shrink:0}
+.brand-title{font-size:1rem;font-weight:800}
+.brand-tag{font-size:.5rem;font-weight:800;background:var(--grad);color:#fff;padding:.1rem .35rem;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;margin-left:.2rem}
+.sidebar-nav{flex:1;padding:.3rem .6rem}
+.nav-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:8px;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:#f3f4f6;color:var(--text)}
+.nav-item.active{background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(239,68,68,.08));color:var(--accent)}
+.nav-item .icon{width:20px;text-align:center;font-size:.95rem}
+.nav-sep{height:1px;background:var(--line);margin:.5rem .7rem}
+.sidebar-footer{padding:.8rem 1rem;border-top:1px solid var(--line);font-size:.75rem;color:var(--muted)}
+.api-badge{display:flex;align-items:center;gap:.4rem;padding:.4rem .6rem;background:#f9fafb;border:1px solid var(--line);border-radius:6px;font-size:.72rem;cursor:pointer;transition:all .15s}
+.api-badge:hover{border-color:var(--accent)}
+.api-badge .dot{width:7px;height:7px;border-radius:50%;background:#d1d5db}
+.api-badge .dot.on{background:#22c55e}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:.7rem 1.2rem;border-bottom:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar h2{font-size:1rem;font-weight:700}
+.topbar-actions{display:flex;gap:.5rem}
+.btn{padding:.4rem .9rem;border-radius:7px;font-size:.78rem;font-weight:600;transition:all .15s}
+.btn-primary{background:var(--grad);color:#fff}.btn-primary:hover{opacity:.9}
+.btn-secondary{background:var(--panel);border:1px solid var(--line);color:var(--text)}.btn-secondary:hover{border-color:var(--accent)}
+.btn-ghost{color:var(--muted);padding:.4rem .5rem}.btn-ghost:hover{color:var(--text)}
+.content{flex:1;overflow-y:auto;padding:1.2rem}
+
+/* Cards */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1rem;margin-bottom:.6rem;transition:all .15s}
+.card:hover{border-color:#d1d5db;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.8rem}
+.status-badge{display:inline-block;padding:.15rem .5rem;border-radius:99px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.status-draft{background:#f3f4f6;color:#6b7280}
+.status-active{background:#dcfce7;color:#16a34a}
+.status-completed{background:#dbeafe;color:#2563eb}
+.status-scheduled{background:#fef3c7;color:#92400e}
+.status-posted{background:#dcfce7;color:#16a34a}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--panel);border-radius:14px;padding:1.5rem;width:90%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal h3{font-size:1rem;font-weight:700;margin-bottom:1rem}
+.form-group{margin-bottom:.8rem}
+.form-group label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.3px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:.5rem .7rem;border:1px solid var(--line);border-radius:7px;background:var(--bg);outline:none;transition:border-color .15s}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:60px}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:.5rem}
+.checkbox-group label{display:flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:500;cursor:pointer;text-transform:none;letter-spacing:0}
+.checkbox-group input[type="checkbox"]{accent-color:var(--accent)}
+.form-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+
+/* Chat */
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem}
+.chat-msg{margin-bottom:.8rem;max-width:80%;animation:fadeIn .2s}
+.chat-msg.user{margin-left:auto}
+.chat-msg.assistant{margin-right:auto}
+.chat-bubble{padding:.6rem .9rem;border-radius:12px;font-size:.84rem;line-height:1.6}
+.chat-msg.user .chat-bubble{background:var(--grad);color:#fff;border-bottom-right-radius:4px}
+.chat-msg.assistant .chat-bubble{background:#f3f4f6;color:var(--text);border-bottom-left-radius:4px}
+.chat-input-row{display:flex;gap:.5rem;padding:.8rem 1rem;border-top:1px solid var(--line);background:var(--panel)}
+.chat-input-row input{flex:1;padding:.55rem .8rem;border:1px solid var(--line);border-radius:8px;outline:none;font-size:.85rem}
+.chat-input-row input:focus{border-color:var(--accent)}
+.chat-send{background:var(--grad);color:#fff;border-radius:8px;padding:.5rem .9rem;font-weight:600;font-size:.82rem}
+.chat-send:disabled{opacity:.5;cursor:not-allowed}
+.chat-empty{text-align:center;color:var(--muted);padding:3rem 1rem;font-size:.88rem;line-height:1.7}
+.preview-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem;margin-top:.5rem;font-size:.8rem}
+.preview-card .platform-tag{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:.3rem}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Calendar */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.cal-header h3{font-size:.95rem;font-weight:700}
+.cal-nav{display:flex;gap:.3rem}
+.cal-nav button{width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:var(--panel);font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.cal-nav button:hover{border-color:var(--accent)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.cal-day-header{background:#f3f4f6;padding:.4rem;text-align:center;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase}
+.cal-day{background:var(--panel);min-height:80px;padding:.3rem;cursor:pointer;transition:background .1s;position:relative}
+.cal-day:hover{background:#f9fafb}
+.cal-day.other{opacity:.35}
+.cal-day.today{background:rgba(249,115,22,.05)}
+.cal-day-num{font-size:.72rem;font-weight:600;margin-bottom:.2rem}
+.cal-dot{width:100%;padding:.1rem .25rem;border-radius:3px;font-size:.58rem;font-weight:600;color:#fff;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:grab}
+.cal-dot[data-platform="x"]{background:#1d9bf0}
+.cal-dot[data-platform="instagram"]{background:#e1306c}
+.cal-dot[data-platform="linkedin"]{background:#0a66c2}
+.cal-dot[data-platform="email"]{background:#16a34a}
+.cal-dot[data-platform="tiktok"]{background:#1a1a1a}
+
+/* Content library */
+.content-filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+.filter-btn{padding:.3rem .7rem;border-radius:6px;font-size:.73rem;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--muted);transition:all .15s}
+.filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.05)}
+.content-item{display:flex;align-items:flex-start;gap:.8rem;padding:.8rem}
+.content-type-tag{font-size:.62rem;font-weight:700;padding:.15rem .4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;flex-shrink:0;background:#f3f4f6;color:var(--muted)}
+.content-body{flex:1;min-width:0}
+.content-body p{font-size:.82rem;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.content-meta{display:flex;gap:.5rem;align-items:center;margin-top:.3rem;font-size:.7rem;color:var(--muted)}
+.content-actions{display:flex;gap:.3rem;flex-shrink:0}
+.content-actions button{font-size:.72rem;padding:.25rem .5rem;border-radius:5px;border:1px solid var(--line);background:var(--panel);color:var(--muted)}
+.content-actions button:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Marketplace */
+.mp-filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+.mp-card{display:flex;align-items:center;gap:.8rem;padding:.9rem}
+.mp-avatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0}
+.mp-info{flex:1;min-width:0}
+.mp-info h4{font-size:.85rem;font-weight:700}
+.mp-info .mp-spec{font-size:.75rem;color:var(--muted)}
+.mp-stats{display:flex;gap:.8rem;margin-top:.2rem;font-size:.72rem;color:var(--muted)}
+.mp-stats span{display:flex;align-items:center;gap:.2rem}
+
+/* Analytics */
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;margin-bottom:1rem}
+.stat-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1rem;text-align:center}
+.stat-card .stat-val{font-size:1.6rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-card .stat-label{font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:.2rem}
+.stat-card .stat-trend{font-size:.7rem;margin-top:.3rem}
+.stat-card .stat-trend.up{color:#16a34a}
+.stat-card .stat-trend.down{color:#ef4444}
+.chart-wrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1rem}
+.chart-wrap h4{font-size:.82rem;font-weight:700;margin-bottom:.6rem}
+canvas{width:100%;height:200px}
+
+/* Settings */
+.settings-section{margin-bottom:1.5rem}
+.settings-section h4{font-size:.85rem;font-weight:700;margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0}
+.setting-row label{font-size:.82rem;font-weight:500}
+.setting-row input[type="text"],.setting-row input[type="password"]{width:280px;padding:.4rem .6rem;border:1px solid var(--line);border-radius:6px;outline:none;font-size:.82rem}
+.setting-row input:focus{border-color:var(--accent)}
+.toggle{width:36px;height:20px;border-radius:10px;background:#d1d5db;position:relative;cursor:pointer;transition:background .2s}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle.on::after{transform:translateX(16px)}
+.danger-btn{background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:7px;padding:.4rem .9rem;font-size:.78rem;font-weight:600}
+.danger-btn:hover{background:#fee2e2}
+
+/* Search */
+.search-bar{position:relative;margin-bottom:.8rem}
+.search-bar input{width:100%;padding:.5rem .7rem .5rem 2rem;border:1px solid var(--line);border-radius:8px;background:var(--panel);outline:none;font-size:.82rem}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar::before{content:'\1F50D';position:absolute;left:.6rem;top:50%;transform:translateY(-50%);font-size:.75rem;opacity:.4}
+
+/* Empty state */
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty .empty-icon{font-size:2rem;margin-bottom:.5rem;opacity:.4}
+.empty p{font-size:.85rem;margin-bottom:.8rem}
+
+/* Day detail panel */
+.day-detail{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1rem;margin-top:.8rem}
+.day-detail h4{font-size:.85rem;font-weight:700;margin-bottom:.5rem}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{position:fixed;left:calc(-1 * var(--sidebar));z-index:50;transition:left .2s;box-shadow:2px 0 20px rgba(0,0,0,.1)}
+  .sidebar.open{left:0}
+  .menu-toggle{display:flex!important}
+  .card-grid{grid-template-columns:1fr}
+  .analytics-grid{grid-template-columns:repeat(2,1fr)}
+  .chat-msg{max-width:90%}
+}
+.menu-toggle{display:none;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;border:1px solid var(--line);background:var(--panel);font-size:.9rem}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">PMS</div>
+    <span class="brand-title">Pro</span>
+    <span class="brand-tag">Console</span>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <div class="nav-item active" data-view="campaigns"><span class="icon">&#9776;</span>Campaigns</div>
+    <div class="nav-item" data-view="agent"><span class="icon">&#128172;</span>Agent Chat</div>
+    <div class="nav-item" data-view="calendar"><span class="icon">&#128197;</span>Calendar</div>
+    <div class="nav-item" data-view="content"><span class="icon">&#128196;</span>Content Library</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" data-view="marketplace"><span class="icon">&#127970;</span>Marketplace</div>
+    <div class="nav-item" data-view="analytics"><span class="icon">&#128200;</span>Analytics</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" data-view="settings"><span class="icon">&#9881;</span>Settings</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="api-badge" onclick="switchView('settings')" title="Click to configure API key">
+      <span class="dot" id="apiDot"></span>
+      <span id="apiLabel">API Key: not set</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">&#9776;</button>
+      <h2 id="viewTitle">Campaigns</h2>
+    </div>
+    <div class="topbar-actions" id="topbarActions"></div>
+  </div>
+  <div class="content" id="viewContent"></div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+/* ── State ── */
+const LS = k => JSON.parse(localStorage.getItem('pms_' + k) || 'null');
+const SS = (k, v) => localStorage.setItem('pms_' + k, JSON.stringify(v));
+
+function getCampaigns() { return LS('campaigns') || []; }
+function saveCampaigns(c) { SS('campaigns', c); }
+function getContent() { return LS('content') || []; }
+function saveContent(c) { SS('content', c); }
+function getChatHistory(id) { return LS('chat_' + id) || []; }
+function saveChatHistory(id, h) { SS('chat_' + id, h); }
+function getCalendarPosts() { return LS('cal_posts') || []; }
+function saveCalendarPosts(p) { SS('cal_posts', p); }
+function getApiKey() { return localStorage.getItem('pms_apikey') || ''; }
+function setApiKey(k) { localStorage.setItem('pms_apikey', k); updateApiBadge(); }
+
+function updateApiBadge() {
+  const k = getApiKey();
+  document.getElementById('apiDot').className = 'dot' + (k ? ' on' : '');
+  document.getElementById('apiLabel').textContent = k ? 'API Key: ' + '\u2022'.repeat(8) : 'API Key: not set';
+}
+
+/* ── View Router ── */
+let currentView = 'campaigns';
+let currentCampaignId = null;
+let calMonth, calYear;
+
+function switchView(view, opts) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+  document.getElementById('sidebar').classList.remove('open');
+  const titles = { campaigns: 'Campaigns', agent: 'AI Agent Chat', calendar: 'Content Calendar', content: 'Content Library', marketplace: 'Marketplace', analytics: 'Analytics', settings: 'Settings', campaignDetail: 'Campaign Detail' };
+  document.getElementById('viewTitle').textContent = titles[view] || 'Console';
+  document.getElementById('topbarActions').innerHTML = '';
+
+  const r = { campaigns: renderCampaigns, agent: renderAgent, calendar: renderCalendar, content: renderContent, marketplace: renderMarketplace, analytics: renderAnalytics, settings: renderSettings, campaignDetail: renderCampaignDetail };
+  if (r[view]) r[view](opts);
+}
+
+document.getElementById('sidebarNav').addEventListener('click', e => {
+  const item = e.target.closest('.nav-item');
+  if (item && item.dataset.view) switchView(item.dataset.view);
+});
+
+/* ── Campaigns View ── */
+function renderCampaigns() {
+  const tb = document.getElementById('topbarActions');
+  tb.innerHTML = '<button class="btn btn-primary" onclick="openNewCampaignModal()">+ New Campaign</button>';
+  const camps = getCampaigns();
+  const el = document.getElementById('viewContent');
+  if (!camps.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">&#128640;</div><p>No campaigns yet. Create your first one!</p><button class="btn btn-primary" onclick="openNewCampaignModal()">Create Campaign</button></div>';
+    return;
+  }
+  el.innerHTML = '<div class="card-grid">' + camps.map(c => `
+    <div class="card" style="cursor:pointer" onclick="openCampaign('${c.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+        <h3 style="font-size:.9rem;font-weight:700">${esc(c.name)}</h3>
+        <span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.4rem;line-height:1.5">${esc(c.goal)}</p>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.4rem">
+        ${c.channels.map(ch => `<span style="font-size:.65rem;padding:.1rem .4rem;border-radius:4px;background:#f3f4f6;font-weight:600">${ch}</span>`).join('')}
+      </div>
+      <div style="font-size:.68rem;color:var(--muted)">Created ${new Date(c.created).toLocaleDateString()}</div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function openNewCampaignModal() {
+  openModal(`
+    <h3>New Campaign</h3>
+    <div class="form-group"><label>Campaign Name</label><input id="campName" placeholder="Summer Product Launch"></div>
+    <div class="form-group"><label>Goal</label><textarea id="campGoal" placeholder="Increase sign-ups by 30% in Q3..."></textarea></div>
+    <div class="form-group"><label>Target Audience</label><input id="campAudience" placeholder="SaaS founders, 25-45, US/EU"></div>
+    <div class="form-group"><label>Channels</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="X" checked> X (Twitter)</label>
+        <label><input type="checkbox" value="LinkedIn"> LinkedIn</label>
+        <label><input type="checkbox" value="Instagram"> Instagram</label>
+        <label><input type="checkbox" value="TikTok"> TikTok</label>
+        <label><input type="checkbox" value="Email"> Email</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="createCampaign()">Create</button>
+    </div>
+  `);
+}
+
+function createCampaign() {
+  const name = document.getElementById('campName').value.trim();
+  const goal = document.getElementById('campGoal').value.trim();
+  const audience = document.getElementById('campAudience').value.trim();
+  const channels = [...document.querySelectorAll('.checkbox-group input:checked')].map(c => c.value);
+  if (!name) return;
+  const camp = { id: 'c_' + Date.now(), name, goal, audience, channels, status: 'Draft', created: new Date().toISOString() };
+  const camps = getCampaigns();
+  camps.unshift(camp);
+  saveCampaigns(camps);
+  closeModal();
+  switchView('campaigns');
+}
+
+function openCampaign(id) {
+  currentCampaignId = id;
+  switchView('campaignDetail', { id });
+}
+
+function renderCampaignDetail(opts) {
+  const camp = getCampaigns().find(c => c.id === (opts && opts.id || currentCampaignId));
+  if (!camp) return switchView('campaigns');
+  currentCampaignId = camp.id;
+  document.getElementById('viewTitle').textContent = camp.name;
+  const tb = document.getElementById('topbarActions');
+  const nextStatus = camp.status === 'Draft' ? 'Active' : camp.status === 'Active' ? 'Completed' : null;
+  tb.innerHTML = `<button class="btn btn-ghost" onclick="switchView('campaigns')">&larr; Back</button>` +
+    (nextStatus ? `<button class="btn btn-primary" onclick="updateCampaignStatus('${camp.id}','${nextStatus}')">Mark ${nextStatus}</button>` : '') +
+    `<button class="btn btn-secondary" onclick="deleteCampaign('${camp.id}')">Delete</button>`;
+  const el = document.getElementById('viewContent');
+  const posts = getCalendarPosts().filter(p => p.campaignId === camp.id);
+  const content = getContent().filter(c => c.campaignId === camp.id);
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem">
+      <div class="card"><div style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.2rem">Status</div><span class="status-badge status-${camp.status.toLowerCase()}">${camp.status}</span></div>
+      <div class="card"><div style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.2rem">Channels</div><div style="display:flex;gap:.3rem;flex-wrap:wrap">${camp.channels.map(ch => `<span style="font-size:.7rem;padding:.1rem .4rem;border-radius:4px;background:#f3f4f6;font-weight:600">${ch}</span>`).join('')}</div></div>
+    </div>
+    <div class="card" style="margin-bottom:.8rem">
+      <div style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.2rem">Goal</div>
+      <p style="font-size:.84rem;line-height:1.6">${esc(camp.goal || 'No goal set')}</p>
+    </div>
+    <div class="card" style="margin-bottom:.8rem">
+      <div style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.2rem">Target Audience</div>
+      <p style="font-size:.84rem;line-height:1.6">${esc(camp.audience || 'Not specified')}</p>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-bottom:.8rem">
+      <button class="btn btn-primary" onclick="switchView('agent')">Chat with Agent about this campaign</button>
+    </div>
+    <h3 style="font-size:.88rem;font-weight:700;margin-bottom:.5rem">Scheduled Posts (${posts.length})</h3>
+    ${posts.length ? posts.map(p => `<div class="card content-item"><span class="cal-dot" data-platform="${p.platform}" style="width:auto;padding:.15rem .5rem;flex-shrink:0">${p.platform}</span><div class="content-body"><p>${esc(p.text)}</p><div class="content-meta">${new Date(p.date).toLocaleDateString()}</div></div></div>`).join('') : '<p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">No posts scheduled yet.</p>'}
+    <h3 style="font-size:.88rem;font-weight:700;margin:.8rem 0 .5rem">Content Pieces (${content.length})</h3>
+    ${content.length ? content.map(c => `<div class="card content-item"><span class="content-type-tag">${c.type}</span><div class="content-body"><p>${esc(c.text.slice(0, 200))}${c.text.length > 200 ? '...' : ''}</p></div></div>`).join('') : '<p style="font-size:.82rem;color:var(--muted)">No content pieces yet. Use the AI Agent to generate some.</p>'}
+  `;
+}
+
+function updateCampaignStatus(id, status) {
+  const camps = getCampaigns();
+  const c = camps.find(x => x.id === id);
+  if (c) { c.status = status; saveCampaigns(camps); switchView('campaignDetail', { id }); }
+}
+
+function deleteCampaign(id) {
+  if (!confirm('Delete this campaign?')) return;
+  saveCampaigns(getCampaigns().filter(c => c.id !== id));
+  switchView('campaigns');
+}
+
+/* ── AI Agent Chat ── */
+let chatStreaming = false;
+
+function renderAgent() {
+  const el = document.getElementById('viewContent');
+  el.style.padding = '0';
+  el.style.display = 'flex';
+  el.style.flexDirection = 'column';
+  const key = getApiKey();
+  const chatId = currentCampaignId || 'general';
+  const history = getChatHistory(chatId);
+  const campaigns = getCampaigns();
+  const selector = campaigns.length ? `<select id="chatCampaignSel" onchange="currentCampaignId=this.value||null;renderAgent()" style="font-size:.75rem;padding:.3rem .5rem;border:1px solid var(--line);border-radius:6px;outline:none">
+    <option value="">General</option>
+    ${campaigns.map(c => `<option value="${c.id}" ${c.id === currentCampaignId ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}
+  </select>` : '';
+  const tb = document.getElementById('topbarActions');
+  tb.innerHTML = selector + `<button class="btn btn-ghost" onclick="if(confirm('Clear chat history?')){saveChatHistory('${chatId}',[]);renderAgent()}">Clear</button>`;
+
+  el.innerHTML = `
+    <div class="chat-wrap">
+      <div class="chat-messages" id="chatMessages">
+        ${!key ? '<div class="chat-empty">Set your OpenAI API key in <a href="#" onclick="switchView(\'settings\');return false" style="color:var(--accent);font-weight:600">Settings</a> to start chatting with the AI marketing agent.</div>' :
+          !history.length ? '<div class="chat-empty">Start a conversation with your AI marketing strategist.<br>Ask about campaign ideas, social media copy, email sequences, or content strategies.</div>' :
+          history.map(m => renderChatMessage(m)).join('')}
+      </div>
+      <div class="chat-input-row">
+        <input id="chatInput" placeholder="${key ? 'Ask your marketing agent...' : 'API key required'}" ${key ? '' : 'disabled'} onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}">
+        <button class="chat-send" id="chatSendBtn" onclick="sendChat()" ${key ? '' : 'disabled'}>Send</button>
+      </div>
+    </div>
+  `;
+  const msgs = document.getElementById('chatMessages');
+  msgs.scrollTop = msgs.scrollHeight;
+  // restore padding when leaving
+  el._cleanup = () => { el.style.padding = '1.2rem'; el.style.display = ''; el.style.flexDirection = ''; };
+}
+
+function renderChatMessage(m) {
+  let extra = '';
+  if (m.role === 'assistant' && m.content) {
+    // Detect social posts
+    const postMatch = m.content.match(/(?:post|tweet|caption|copy)[\s\S]*?[""](.+?)[""]/gi);
+    if (postMatch) {
+      const platforms = ['X', 'Instagram', 'LinkedIn', 'TikTok'];
+      extra += postMatch.slice(0, 3).map((p, i) => {
+        const text = p.replace(/.*?[""]/, '').replace(/[""].*/, '');
+        const plat = platforms[i % platforms.length];
+        return `<div class="preview-card"><div class="platform-tag" style="color:${platformColor(plat)}">${plat}</div><div style="font-size:.8rem;line-height:1.5">${esc(text)}</div></div>`;
+      }).join('');
+    }
+    // Detect schedule suggestions
+    if (/\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|schedule|posting|weekly)\b/i.test(m.content) && /\b(am|pm|morning|afternoon|evening|\d{1,2}:\d{2})\b/i.test(m.content)) {
+      extra += `<div class="preview-card" style="margin-top:.5rem"><div class="platform-tag" style="color:var(--accent)">Suggested Schedule</div><div style="font-size:.75rem;color:var(--muted)">The agent suggested a posting schedule above. Add posts to your Calendar to put it into action.</div></div>`;
+    }
+  }
+  return `<div class="chat-msg ${m.role}"><div class="chat-bubble">${formatChat(m.content)}${extra}</div></div>`;
+}
+
+function platformColor(p) {
+  return { X: '#1d9bf0', Instagram: '#e1306c', LinkedIn: '#0a66c2', Email: '#16a34a', TikTok: '#1a1a1a' }[p] || '#6b7280';
+}
+
+function formatChat(text) {
+  if (!text) return '';
+  return esc(text).replace(/\n/g, '<br>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`(.+?)`/g, '<code style="background:#f3f4f6;padding:.1rem .3rem;border-radius:3px;font-size:.8em">$1</code>');
+}
+
+async function sendChat() {
+  if (chatStreaming) return;
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const key = getApiKey();
+  if (!key) return;
+
+  const chatId = currentCampaignId || 'general';
+  const history = getChatHistory(chatId);
+  history.push({ role: 'user', content: text });
+  saveChatHistory(chatId, history);
+
+  input.value = '';
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML = history.map(m => renderChatMessage(m)).join('');
+  // Add typing indicator
+  msgs.innerHTML += '<div class="chat-msg assistant" id="typingMsg"><div class="chat-bubble" style="color:var(--muted)">Thinking...</div></div>';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  chatStreaming = true;
+  document.getElementById('chatSendBtn').disabled = true;
+
+  const camp = currentCampaignId ? getCampaigns().find(c => c.id === currentCampaignId) : null;
+  const systemMsg = `You are an expert marketing strategist. Help the user plan campaigns, write social media posts, email sequences, ad copy, and content strategies. Be specific with actionable tactics, suggested copy, and posting schedules.${camp ? `\n\nCurrent campaign: "${camp.name}"\nGoal: ${camp.goal}\nAudience: ${camp.audience}\nChannels: ${camp.channels.join(', ')}\nStatus: ${camp.status}` : ''}`;
+
+  const apiMessages = [{ role: 'system', content: systemMsg }, ...history.map(m => ({ role: m.role, content: m.content }))];
+
+  try {
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages: apiMessages, max_tokens: 1500 })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error?.message || 'API error ' + resp.status);
+    }
+    const data = await resp.json();
+    const reply = data.choices?.[0]?.message?.content || 'No response.';
+    history.push({ role: 'assistant', content: reply });
+    saveChatHistory(chatId, history);
+
+    // Auto-save content pieces from AI
+    autoSaveContent(reply, camp);
+  } catch (err) {
+    history.push({ role: 'assistant', content: 'Error: ' + err.message });
+    saveChatHistory(chatId, history);
+  }
+
+  chatStreaming = false;
+  document.getElementById('chatSendBtn').disabled = false;
+  msgs.innerHTML = history.map(m => renderChatMessage(m)).join('');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function autoSaveContent(text, camp) {
+  // If the AI generated content that looks like social posts or emails, auto-save
+  const lines = text.split('\n');
+  let found = false;
+  for (const line of lines) {
+    if (line.match(/^(post|tweet|caption|subject line|email body|headline|ad copy|blog title)/i) && line.length > 30) {
+      found = true;
+    }
+  }
+  // Simple heuristic: if text contains quoted content, save the whole response as a content piece
+  if (text.match(/[""].{20,}[""]/)) {
+    const content = getContent();
+    const type = text.match(/email/i) ? 'Email' : text.match(/blog/i) ? 'Blog Outline' : text.match(/ad/i) ? 'Ad Copy' : 'Social Post';
+    content.unshift({ id: 'ct_' + Date.now(), type, text: text.slice(0, 500), campaignId: camp?.id || null, campaign: camp?.name || 'General', status: 'Draft', created: new Date().toISOString() });
+    saveContent(content);
+  }
+}
+
+/* ── Calendar View ── */
+function renderCalendar() {
+  const now = new Date();
+  if (calMonth === undefined) { calMonth = now.getMonth(); calYear = now.getFullYear(); }
+  const el = document.getElementById('viewContent');
+  const tb = document.getElementById('topbarActions');
+  tb.innerHTML = '<button class="btn btn-primary" onclick="openAddPostModal()">+ Add Post</button>';
+
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay = new Date(calYear, calMonth + 1, 0);
+  const startPad = firstDay.getDay();
+  const totalDays = lastDay.getDate();
+  const today = now.getDate();
+  const isThisMonth = calMonth === now.getMonth() && calYear === now.getFullYear();
+  const posts = getCalendarPosts();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  let cells = '';
+  // Previous month padding
+  const prevLast = new Date(calYear, calMonth, 0).getDate();
+  for (let i = startPad - 1; i >= 0; i--) {
+    cells += `<div class="cal-day other"><div class="cal-day-num">${prevLast - i}</div></div>`;
+  }
+  // Current month
+  for (let d = 1; d <= totalDays; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayPosts = posts.filter(p => p.date === dateStr);
+    const cls = (isThisMonth && d === today) ? ' today' : '';
+    cells += `<div class="cal-day${cls}" onclick="showDayDetail('${dateStr}')" data-date="${dateStr}" ondragover="event.preventDefault()" ondrop="dropPost(event,'${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      ${dayPosts.map(p => `<div class="cal-dot" data-platform="${p.platform}" draggable="true" ondragstart="dragPost(event,'${p.id}')" title="${esc(p.text)}">${esc(p.text.slice(0, 18))}</div>`).join('')}
+    </div>`;
+  }
+  // Next month padding
+  const totalCells = startPad + totalDays;
+  const remaining = (7 - totalCells % 7) % 7;
+  for (let i = 1; i <= remaining; i++) {
+    cells += `<div class="cal-day other"><div class="cal-day-num">${i}</div></div>`;
+  }
+
+  el.innerHTML = `
+    <div class="cal-header">
+      <h3>${monthNames[calMonth]} ${calYear}</h3>
+      <div class="cal-nav">
+        <button onclick="calMonth--;if(calMonth<0){calMonth=11;calYear--}renderCalendar()">&larr;</button>
+        <button onclick="calMonth=${now.getMonth()};calYear=${now.getFullYear()};renderCalendar()">Today</button>
+        <button onclick="calMonth++;if(calMonth>11){calMonth=0;calYear++}renderCalendar()">&rarr;</button>
+      </div>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-day-header">Sun</div><div class="cal-day-header">Mon</div><div class="cal-day-header">Tue</div><div class="cal-day-header">Wed</div><div class="cal-day-header">Thu</div><div class="cal-day-header">Fri</div><div class="cal-day-header">Sat</div>
+      ${cells}
+    </div>
+    <div id="dayDetail"></div>
+  `;
+}
+
+function showDayDetail(dateStr) {
+  const posts = getCalendarPosts().filter(p => p.date === dateStr);
+  const detail = document.getElementById('dayDetail');
+  const d = new Date(dateStr + 'T12:00:00');
+  detail.innerHTML = `
+    <div class="day-detail">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+        <h4>${d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h4>
+        <button class="btn btn-primary" onclick="openAddPostModal('${dateStr}')" style="font-size:.72rem;padding:.3rem .6rem">+ Add</button>
+      </div>
+      ${posts.length ? posts.map(p => `
+        <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--line)">
+          <span class="cal-dot" data-platform="${p.platform}" style="width:auto;flex-shrink:0;padding:.15rem .5rem;cursor:default">${p.platform}</span>
+          <span style="flex:1;font-size:.8rem">${esc(p.text)}</span>
+          <button class="btn-ghost" style="font-size:.7rem;color:var(--muted)" onclick="deleteCalPost('${p.id}')">&#10005;</button>
+        </div>
+      `).join('') : '<p style="font-size:.82rem;color:var(--muted)">No posts scheduled.</p>'}
+    </div>
+  `;
+}
+
+function openAddPostModal(dateStr) {
+  const camps = getCampaigns();
+  const today = new Date().toISOString().slice(0, 10);
+  openModal(`
+    <h3>Schedule Post</h3>
+    <div class="form-group"><label>Date</label><input id="postDate" type="date" value="${dateStr || today}"></div>
+    <div class="form-group"><label>Platform</label>
+      <select id="postPlatform">
+        <option value="x">X (Twitter)</option>
+        <option value="instagram">Instagram</option>
+        <option value="linkedin">LinkedIn</option>
+        <option value="email">Email</option>
+        <option value="tiktok">TikTok</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Campaign</label>
+      <select id="postCampaign">
+        <option value="">None</option>
+        ${camps.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>Content</label><textarea id="postText" rows="3" placeholder="Write your post..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="addCalPost()">Schedule</button>
+    </div>
+  `);
+}
+
+function addCalPost() {
+  const date = document.getElementById('postDate').value;
+  const platform = document.getElementById('postPlatform').value;
+  const text = document.getElementById('postText').value.trim();
+  const campaignId = document.getElementById('postCampaign').value || null;
+  if (!text || !date) return;
+  const posts = getCalendarPosts();
+  posts.push({ id: 'p_' + Date.now(), date, platform, text, campaignId, status: 'Scheduled' });
+  saveCalendarPosts(posts);
+  closeModal();
+  renderCalendar();
+}
+
+function deleteCalPost(id) {
+  saveCalendarPosts(getCalendarPosts().filter(p => p.id !== id));
+  renderCalendar();
+}
+
+let dragPostId = null;
+function dragPost(e, id) { dragPostId = id; e.dataTransfer.effectAllowed = 'move'; }
+function dropPost(e, dateStr) {
+  e.preventDefault();
+  if (!dragPostId) return;
+  const posts = getCalendarPosts();
+  const p = posts.find(x => x.id === dragPostId);
+  if (p) { p.date = dateStr; saveCalendarPosts(posts); renderCalendar(); }
+  dragPostId = null;
+}
+
+/* ── Content Library ── */
+let contentFilter = 'All';
+let contentSearch = '';
+
+function renderContent() {
+  const el = document.getElementById('viewContent');
+  const tb = document.getElementById('topbarActions');
+  tb.innerHTML = '<button class="btn btn-primary" onclick="openAddContentModal()">+ Add Content</button>';
+
+  let items = getContent();
+  if (contentFilter !== 'All') items = items.filter(c => c.type === contentFilter);
+  if (contentSearch) items = items.filter(c => c.text.toLowerCase().includes(contentSearch.toLowerCase()) || c.campaign?.toLowerCase().includes(contentSearch.toLowerCase()));
+
+  const types = ['All', 'Social Post', 'Email', 'Blog Outline', 'Ad Copy'];
+  el.innerHTML = `
+    <div class="search-bar"><input placeholder="Search content..." value="${esc(contentSearch)}" oninput="contentSearch=this.value;renderContent()"></div>
+    <div class="content-filters">
+      ${types.map(t => `<button class="filter-btn ${t === contentFilter ? 'active' : ''}" onclick="contentFilter='${t}';renderContent()">${t}</button>`).join('')}
+    </div>
+    ${items.length ? items.map(c => `
+      <div class="card content-item">
+        <span class="content-type-tag">${c.type}</span>
+        <div class="content-body">
+          <p>${esc(c.text)}</p>
+          <div class="content-meta">
+            <span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span>
+            ${c.campaign ? `<span>${esc(c.campaign)}</span>` : ''}
+            <span>${new Date(c.created).toLocaleDateString()}</span>
+          </div>
+        </div>
+        <div class="content-actions">
+          <button onclick="editContent('${c.id}')" title="Edit">Edit</button>
+          <button onclick="copyContent('${c.id}')" title="Copy">Copy</button>
+          <button onclick="deleteContent('${c.id}')" title="Delete">&#10005;</button>
+        </div>
+      </div>
+    `).join('') : '<div class="empty"><div class="empty-icon">&#128196;</div><p>No content yet. Chat with the AI Agent to generate some, or add manually.</p></div>'}
+  `;
+}
+
+function openAddContentModal() {
+  const camps = getCampaigns();
+  openModal(`
+    <h3>Add Content</h3>
+    <div class="form-group"><label>Type</label>
+      <select id="ctType"><option>Social Post</option><option>Email</option><option>Blog Outline</option><option>Ad Copy</option></select>
+    </div>
+    <div class="form-group"><label>Campaign</label>
+      <select id="ctCampaign">
+        <option value="">None</option>
+        ${camps.map(c => `<option value="${c.id}" data-name="${esc(c.name)}">${esc(c.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>Content</label><textarea id="ctText" rows="5" placeholder="Write your content..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="addContent()">Save</button>
+    </div>
+  `);
+}
+
+function addContent() {
+  const type = document.getElementById('ctType').value;
+  const text = document.getElementById('ctText').value.trim();
+  const sel = document.getElementById('ctCampaign');
+  const campaignId = sel.value || null;
+  const campaign = sel.selectedOptions[0]?.dataset.name || null;
+  if (!text) return;
+  const content = getContent();
+  content.unshift({ id: 'ct_' + Date.now(), type, text, campaignId, campaign, status: 'Draft', created: new Date().toISOString() });
+  saveContent(content);
+  closeModal();
+  renderContent();
+}
+
+function editContent(id) {
+  const content = getContent();
+  const c = content.find(x => x.id === id);
+  if (!c) return;
+  openModal(`
+    <h3>Edit Content</h3>
+    <div class="form-group"><label>Type</label>
+      <select id="editCtType">
+        ${['Social Post','Email','Blog Outline','Ad Copy'].map(t => `<option ${t === c.type ? 'selected' : ''}>${t}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>Status</label>
+      <select id="editCtStatus">
+        ${['Draft','Scheduled','Posted'].map(s => `<option ${s === c.status ? 'selected' : ''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>Content</label><textarea id="editCtText" rows="5">${esc(c.text)}</textarea></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditContent('${id}')">Save</button>
+    </div>
+  `);
+}
+
+function saveEditContent(id) {
+  const content = getContent();
+  const c = content.find(x => x.id === id);
+  if (c) {
+    c.type = document.getElementById('editCtType').value;
+    c.status = document.getElementById('editCtStatus').value;
+    c.text = document.getElementById('editCtText').value;
+    saveContent(content);
+  }
+  closeModal();
+  renderContent();
+}
+
+function copyContent(id) {
+  const c = getContent().find(x => x.id === id);
+  if (c) navigator.clipboard.writeText(c.text).then(() => showToast('Copied to clipboard'));
+}
+
+function deleteContent(id) {
+  saveContent(getContent().filter(x => x.id !== id));
+  renderContent();
+}
+
+/* ── Marketplace ── */
+const providers = [
+  { name: 'SocialSpark Agency', avatar: 'SS', color: '#1d9bf0', specialty: 'Social Media', rating: 4.9, rate: 120, projects: 234, category: 'Social Media' },
+  { name: 'GrowthHackers Co', avatar: 'GH', color: '#16a34a', specialty: 'Growth Strategy', rating: 4.8, rate: 150, projects: 189, category: 'Growth' },
+  { name: 'ContentForge', avatar: 'CF', color: '#8b5cf6', specialty: 'Blog & Content', rating: 4.7, rate: 85, projects: 312, category: 'Content' },
+  { name: 'SEO Wizards', avatar: 'SW', color: '#f97316', specialty: 'SEO & SEM', rating: 4.9, rate: 130, projects: 278, category: 'SEO' },
+  { name: 'MailCraft Pro', avatar: 'MC', color: '#ef4444', specialty: 'Email Marketing', rating: 4.6, rate: 95, projects: 156, category: 'Email' },
+  { name: 'AdPeak Digital', avatar: 'AP', color: '#0ea5e9', specialty: 'PPC & Ads', rating: 4.8, rate: 140, projects: 201, category: 'PPC' },
+  { name: 'ViralVision', avatar: 'VV', color: '#e1306c', specialty: 'TikTok & Reels', rating: 4.7, rate: 110, projects: 167, category: 'Social Media' },
+  { name: 'BrandVault', avatar: 'BV', color: '#1a1a1a', specialty: 'Brand Identity', rating: 4.9, rate: 175, projects: 94, category: 'Content' },
+  { name: 'LinkBuilder HQ', avatar: 'LB', color: '#0a66c2', specialty: 'Link Building', rating: 4.5, rate: 100, projects: 223, category: 'SEO' },
+  { name: 'NexusGrowth', avatar: 'NG', color: '#22c55e', specialty: 'Product Marketing', rating: 4.8, rate: 160, projects: 78, category: 'Growth' },
+  { name: 'PixelPush', avatar: 'PP', color: '#a855f7', specialty: 'Social Ads Creative', rating: 4.6, rate: 90, projects: 145, category: 'PPC' },
+  { name: 'Newsletter Lab', avatar: 'NL', color: '#f59e0b', specialty: 'Newsletter Strategy', rating: 4.7, rate: 105, projects: 112, category: 'Email' },
+];
+
+let mpFilter = 'All';
+
+function renderMarketplace() {
+  const el = document.getElementById('viewContent');
+  const categories = ['All', 'Social Media', 'SEO', 'Content', 'Growth', 'Email', 'PPC'];
+  const filtered = mpFilter === 'All' ? providers : providers.filter(p => p.category === mpFilter);
+
+  el.innerHTML = `
+    <div class="mp-filters">
+      ${categories.map(c => `<button class="filter-btn ${c === mpFilter ? 'active' : ''}" onclick="mpFilter='${c}';renderMarketplace()">${c}</button>`).join('')}
+    </div>
+    <div class="card-grid">
+      ${filtered.map(p => `
+        <div class="card mp-card">
+          <div class="mp-avatar" style="background:${p.color}">${p.avatar}</div>
+          <div class="mp-info">
+            <h4>${p.name}</h4>
+            <div class="mp-spec">${p.specialty}</div>
+            <div class="mp-stats">
+              <span>${'\u2605'.repeat(Math.floor(p.rating))} ${p.rating}</span>
+              <span>$${p.rate}/hr</span>
+              <span>${p.projects} projects</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('<h3>Coming Soon</h3><p style=\\'font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:1rem\\'>The marketplace is launching soon. You\\'ll be able to hire ${esc(p.name)} directly from the console.</p><div class=\\'form-actions\\'><button class=\\'btn btn-secondary\\' onclick=\\'closeModal()\\'>Got it</button></div>')">Hire</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+/* ── Analytics View ── */
+function renderAnalytics() {
+  const el = document.getElementById('viewContent');
+  const camps = getCampaigns();
+  const posts = getCalendarPosts();
+  const content = getContent();
+
+  el.innerHTML = `
+    <div class="analytics-grid">
+      <div class="stat-card"><div class="stat-val">24.8K</div><div class="stat-label">Total Reach</div><div class="stat-trend up">+12.3% this week</div></div>
+      <div class="stat-card"><div class="stat-val">3.4%</div><div class="stat-label">Engagement Rate</div><div class="stat-trend up">+0.8% vs last week</div></div>
+      <div class="stat-card"><div class="stat-val">${content.length}</div><div class="stat-label">Content Pieces</div><div class="stat-trend">${camps.length} campaigns</div></div>
+      <div class="stat-card"><div class="stat-val">${posts.length}</div><div class="stat-label">Scheduled Posts</div><div class="stat-trend">${posts.filter(p => p.status === 'Scheduled').length} pending</div></div>
+    </div>
+    <div class="chart-wrap" style="margin-bottom:1rem">
+      <h4>Engagement Over Time (mock)</h4>
+      <canvas id="engagementChart" height="200"></canvas>
+    </div>
+    <div class="card" style="padding:1rem">
+      <h4 style="font-size:.85rem;font-weight:700;margin-bottom:.4rem">Best Performing Post</h4>
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <span class="cal-dot" data-platform="x" style="width:auto;padding:.15rem .5rem;flex-shrink:0;cursor:default">X</span>
+        <div>
+          <p style="font-size:.82rem;line-height:1.5">"Just shipped our new feature after 3 weeks of building in public. The response has been incredible -- 847 likes in 2 hours."</p>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.2rem">847 likes &middot; 234 retweets &middot; 56 replies</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:.8rem;text-align:center;padding:1.5rem">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Want real analytics from your connected accounts?</p>
+      <button class="btn btn-primary">Connect Real Analytics in Pro</button>
+    </div>
+  `;
+
+  // Draw chart
+  setTimeout(drawEngagementChart, 50);
+}
+
+function drawEngagementChart() {
+  const canvas = document.getElementById('engagementChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 200 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '200px';
+  ctx.scale(dpr, dpr);
+
+  const w = rect.width, h = 200;
+  const pad = { top: 20, right: 20, bottom: 30, left: 45 };
+  const pw = w - pad.left - pad.right, ph = h - pad.top - pad.bottom;
+
+  // Generate random-looking but smooth data
+  const seed = 42;
+  const points = 30;
+  const data = [];
+  let v = 2.5;
+  for (let i = 0; i < points; i++) {
+    v += (Math.sin(i * 0.7 + seed) * 0.3 + Math.cos(i * 1.3) * 0.2);
+    v = Math.max(0.5, Math.min(5.5, v));
+    data.push(v);
+  }
+  const maxV = Math.max(...data) * 1.1;
+  const minV = Math.min(...data) * 0.9;
+
+  // Grid
+  ctx.strokeStyle = '#e5e7eb';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (ph / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(w - pad.right, y); ctx.stroke();
+    ctx.fillStyle = '#9ca3af'; ctx.font = '10px Manrope,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(((maxV - (maxV - minV) * i / 4)).toFixed(1) + '%', pad.left - 5, y + 3);
+  }
+
+  // Labels
+  const days = ['Jun 1', '', '', '', 'Jun 5', '', '', '', '', 'Jun 10', '', '', '', '', 'Jun 15', '', '', '', '', 'Jun 20', '', '', '', '', 'Jun 25', '', '', '', '', 'Jun 30'];
+  ctx.fillStyle = '#9ca3af'; ctx.font = '9px Manrope,sans-serif'; ctx.textAlign = 'center';
+  for (let i = 0; i < points; i++) {
+    if (days[i]) ctx.fillText(days[i], pad.left + (pw / (points - 1)) * i, h - 8);
+  }
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + ph);
+  grad.addColorStop(0, 'rgba(249,115,22,0.15)');
+  grad.addColorStop(1, 'rgba(249,115,22,0)');
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top + ph);
+  for (let i = 0; i < points; i++) {
+    const x = pad.left + (pw / (points - 1)) * i;
+    const y = pad.top + ph - ((data[i] - minV) / (maxV - minV)) * ph;
+    if (i === 0) ctx.lineTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.lineTo(pad.left + pw, pad.top + ph);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  const lineGrad = ctx.createLinearGradient(pad.left, 0, w - pad.right, 0);
+  lineGrad.addColorStop(0, '#f97316');
+  lineGrad.addColorStop(1, '#ef4444');
+  ctx.strokeStyle = lineGrad;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  for (let i = 0; i < points; i++) {
+    const x = pad.left + (pw / (points - 1)) * i;
+    const y = pad.top + ph - ((data[i] - minV) / (maxV - minV)) * ph;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Dots
+  for (let i = 0; i < points; i++) {
+    const x = pad.left + (pw / (points - 1)) * i;
+    const y = pad.top + ph - ((data[i] - minV) / (maxV - minV)) * ph;
+    ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#f97316'; ctx.fill();
+  }
+}
+
+/* ── Settings View ── */
+function renderSettings() {
+  const el = document.getElementById('viewContent');
+  const key = getApiKey();
+  const analyticsOn = LS('analytics') !== false;
+  const camps = getCampaigns();
+  const content = getContent();
+  const posts = getCalendarPosts();
+
+  el.innerHTML = `
+    <div class="settings-section">
+      <h4>API Configuration</h4>
+      <div class="setting-row">
+        <label>OpenAI API Key</label>
+        <div style="display:flex;gap:.4rem;align-items:center">
+          <input type="password" id="settingsApiKey" value="${esc(key)}" placeholder="sk-..." style="width:260px">
+          <button class="btn btn-secondary" onclick="toggleKeyVis()">Show</button>
+          <button class="btn btn-primary" onclick="setApiKey(document.getElementById('settingsApiKey').value);showToast('API key saved')">Save</button>
+        </div>
+      </div>
+      <p style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Your key is stored locally in this browser. It is never sent to PMS servers.</p>
+    </div>
+
+    <div class="settings-section">
+      <h4>Account</h4>
+      <div class="setting-row">
+        <label>Console version</label>
+        <span style="font-size:.82rem;color:var(--muted)">PMS Console v1.0.0</span>
+      </div>
+      <div class="setting-row">
+        <label>Storage used</label>
+        <span style="font-size:.82rem;color:var(--muted)">${camps.length} campaigns, ${content.length} content pieces, ${posts.length} scheduled posts</span>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h4>Privacy</h4>
+      <div class="setting-row">
+        <label>Anonymous analytics</label>
+        <div class="toggle ${analyticsOn ? 'on' : ''}" onclick="SS('analytics',!LS('analytics'));renderSettings()"></div>
+      </div>
+      <p style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Cookieless, aggregated usage stats. No PII collected.</p>
+    </div>
+
+    <div class="settings-section">
+      <h4>Data</h4>
+      <div class="setting-row">
+        <label>Export all data</label>
+        <button class="btn btn-secondary" onclick="exportData()">Export JSON</button>
+      </div>
+      <div class="setting-row">
+        <label>Delete all data</label>
+        <button class="danger-btn" onclick="if(confirm('Delete all PMS console data? This cannot be undone.')){Object.keys(localStorage).filter(k=>k.startsWith('pms_')).forEach(k=>localStorage.removeItem(k));showToast('All data deleted');switchView('campaigns')}">Delete Everything</button>
+      </div>
+    </div>
+  `;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('settingsApiKey');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function exportData() {
+  const data = {};
+  Object.keys(localStorage).filter(k => k.startsWith('pms_')).forEach(k => { data[k] = JSON.parse(localStorage.getItem(k)); });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pms-console-export.json';
+  a.click();
+}
+
+/* ── Modal & Toast ── */
+function openModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, { position: 'fixed', bottom: '1.2rem', right: '1.2rem', background: 'var(--text)', color: '#fff', padding: '.5rem 1rem', borderRadius: '8px', fontSize: '.82rem', fontWeight: '600', zIndex: '200', animation: 'fadeIn .2s', fontFamily: 'Manrope,sans-serif' });
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 2000);
+}
+
+/* ── Utils ── */
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+/* ── Cleanup on view switch ── */
+const origSwitch = switchView;
+window.switchView = function(view, opts) {
+  const el = document.getElementById('viewContent');
+  if (el._cleanup) { el._cleanup(); el._cleanup = null; }
+  origSwitch(view, opts);
+};
+
+/* ── Init ── */
+updateApiBadge();
+switchView('campaigns');
+window.addEventListener('resize', () => { if (currentView === 'analytics') drawEngagementChart(); });
+</script>
+</body>
+</html>
