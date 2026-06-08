@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ProMarketingStore — Your Marketing Runs Itself</title>
+<meta name="description" content="AI plans your campaign, writes your content, posts on schedule, and optimizes from results. Autonomous marketing for $9/mo.">
+<meta property="og:title" content="ProMarketingStore — Your Marketing Runs Itself">
+<meta property="og:description" content="AI plans your campaign, writes your content, posts on schedule, and optimizes from results. You set the goal — it does the rest.">
+<link rel="canonical" href="https://promarketingstore.pages.dev/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--accent:#f97316;--accent-red:#ef4444;--bg:#fafafa;--text:#1a1a1a;--muted:#6b7280;--panel:#ffffff;--line:#e5e7eb;--pro-gradient:linear-gradient(135deg,#f97316,#ef4444)}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+/* Header */
+header{border-bottom:1px solid var(--line);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--panel)}
+.brand{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--text)}
+.brand-icon{width:28px;height:28px;border-radius:6px;background:var(--pro-gradient);display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;font-weight:800}
+.brand-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700}
+.pro-tag{font-size:.55rem;font-weight:800;background:var(--pro-gradient);color:white;padding:.1rem .4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+nav{display:flex;gap:.85rem;font-size:.82rem;font-weight:600;margin-left:auto}
+nav a{color:var(--muted)}nav a:hover{color:var(--text);text-decoration:none}
+
+/* Hero */
+.hero{text-align:center;padding:4rem 1.5rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(249,115,22,.06) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:700;margin-bottom:.6rem;position:relative}
+.hero h1 span{background:var(--pro-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .tagline{color:var(--muted);font-size:1rem;max-width:640px;margin:0 auto 1.2rem;line-height:1.7}
+.badge{display:inline-block;padding:.25rem .7rem;border-radius:99px;font-size:.75rem;font-weight:600;background:var(--panel);border:1px solid var(--line);color:var(--muted);margin:.15rem}
+.badge-pro{background:var(--pro-gradient);color:white;border:none}
+.badge-soon{background:#fef3c7;border-color:#fde68a;color:#92400e}
+
+/* Sections */
+.section{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem}
+.section-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;text-align:center;margin-bottom:.4rem}
+.section-sub{color:var(--muted);font-size:.88rem;text-align:center;max-width:600px;margin:0 auto 1.5rem;line-height:1.6}
+
+/* Feature cards */
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;max-width:1100px;margin:0 auto;padding:0 1.5rem 2rem}
+.feature-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.5rem;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.feature-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:white;margin-bottom:.8rem}
+.feature-card h3{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+.feature-card p{font-size:.82rem;color:var(--muted);line-height:1.6}
+
+/* Flow pipeline */
+.pipeline{display:flex;align-items:center;justify-content:center;gap:.3rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.pipeline-step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.6rem 1rem;text-align:center;min-width:100px;font-size:.78rem;font-weight:600;transition:all .2s}
+.pipeline-step:hover{border-color:var(--accent)}
+.pipeline-step .step-num{display:block;font-size:.6rem;color:var(--muted);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.5px}
+.pipeline-step .step-icon{font-size:1.2rem;display:block;margin-bottom:.2rem}
+.pipeline-arrow{color:var(--accent);font-size:1rem;font-weight:700}
+
+/* How it works */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.how-step{text-align:center;padding:1rem .5rem}
+.how-num{width:40px;height:40px;border-radius:50%;background:var(--pro-gradient);color:white;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;margin:0 auto .6rem}
+.how-step h4{font-size:.88rem;font-weight:700;margin-bottom:.3rem}
+.how-step p{font-size:.76rem;color:var(--muted);line-height:1.5}
+
+/* Pricing */
+.pricing-wrap{display:flex;justify-content:center;padding:1rem 0}
+.pricing-card{background:var(--panel);border:2px solid var(--accent);border-radius:16px;padding:2rem;max-width:400px;width:100%;text-align:center;position:relative;box-shadow:0 4px 24px rgba(249,115,22,.12)}
+.pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--pro-gradient);color:white;font-size:.7rem;font-weight:700;padding:.3rem .9rem;border-radius:99px;text-transform:uppercase;letter-spacing:.5px}
+.pricing-price{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:700;margin:.8rem 0 .2rem}
+.pricing-price span{font-size:1rem;color:var(--muted);font-family:'Manrope',sans-serif;font-weight:500}
+.pricing-note{font-size:.78rem;color:var(--muted);margin-bottom:1.2rem}
+.pricing-features{list-style:none;text-align:left;margin-bottom:1.5rem}
+.pricing-features li{font-size:.82rem;padding:.35rem 0;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.5rem}
+.pricing-features li::before{content:'';width:18px;height:18px;border-radius:50%;background:rgba(249,115,22,.1);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.pricing-cta{display:inline-block;background:var(--pro-gradient);color:white;font-size:.88rem;font-weight:700;padding:.7rem 2rem;border-radius:10px;text-decoration:none;transition:all .2s}
+.pricing-cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.3);text-decoration:none}
+
+/* Comparison table */
+.compare-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.compare-table th{font-weight:700;padding:.6rem .8rem;text-align:left;border-bottom:2px solid var(--line)}
+.compare-table th:first-child{width:40%}
+.compare-table td{padding:.5rem .8rem;border-bottom:1px solid var(--line)}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table .check{color:#10b981;font-weight:700}.compare-table .cross{color:#d1d5db}
+.compare-table .pro-col{background:rgba(249,115,22,.03)}
+
+/* Waitlist */
+.waitlist{max-width:500px;margin:0 auto;text-align:center;padding:2rem 1.5rem}
+.waitlist h2{font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:.3rem}
+.waitlist p{font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.waitlist-form{display:flex;gap:.4rem;max-width:400px;margin:0 auto}
+.waitlist-form input{flex:1;padding:.6rem .8rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;font-family:inherit;outline:none}
+.waitlist-form input:focus{border-color:var(--accent)}
+.waitlist-form button{background:var(--pro-gradient);color:white;border:none;padding:.6rem 1.2rem;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.waitlist-form button:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.3)}
+.waitlist-msg{font-size:.78rem;margin-top:.5rem;color:#10b981;display:none}
+
+/* Cross-store */
+.xstore{max-width:1100px;margin:0 auto;padding:1rem 1.5rem;text-align:center}
+.xstore h3{font-size:.72rem;color:var(--muted);font-weight:600;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
+.xstore-grid{display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap}
+.xstore-link{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;text-decoration:none;color:#6b7280;font-size:.7rem;font-weight:600;transition:all .15s}
+.xstore-link:hover{border-color:var(--accent);color:var(--text);text-decoration:none}
+
+/* Footer */
+footer{border-top:1px solid var(--line);padding:1.2rem;text-align:center;font-size:.72rem;color:var(--muted);background:var(--panel)}
+footer a{color:var(--accent)}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:1.8rem}
+  .how-grid{grid-template-columns:repeat(2,1fr)}
+  .pipeline{flex-direction:column;gap:.5rem}
+  .pipeline-arrow{transform:rotate(90deg)}
+  .waitlist-form{flex-direction:column}
+  nav{font-size:.72rem;gap:.5rem}
+}
+@media(max-width:480px){
+  .how-grid{grid-template-columns:1fr}
+  .features{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="brand">
+    <span class="brand-icon">P</span>
+    <span class="brand-name">ProMarketingStore</span>
+    <span class="pro-tag">Pro</span>
+  </a>
+  <nav>
+    <a href="/campaigns/">Campaigns</a>
+    <a href="/marketplace/">Marketplace</a>
+    <a href="https://freemarketingstore.pages.dev">Free Tools</a>
+    <a href="https://openfrontier.pages.dev">Open Frontier</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>Pro<span>Marketing</span>Store</h1>
+  <p class="tagline">AI plans your campaign, writes your content, posts on schedule, and optimizes from results. You set the goal — it does the rest.</p>
+  <span class="badge badge-pro">$9/mo</span>
+  <span class="badge badge-soon">Coming Soon</span>
+  <span class="badge">Autonomous Marketing</span>
+</section>
+
+<!-- Pipeline -->
+<section class="section">
+  <h2 class="section-title">Set a Goal. Watch It Happen.</h2>
+  <p class="section-sub">Your marketing pipeline runs end-to-end on autopilot. AI handles every step from strategy to optimization.</p>
+  <div class="pipeline">
+    <div class="pipeline-step"><span class="step-icon">&#127919;</span><span class="step-num">Step 1</span>Set Goal</div>
+    <span class="pipeline-arrow">&#8594;</span>
+    <div class="pipeline-step"><span class="step-icon">&#128202;</span><span class="step-num">Step 2</span>AI Plans</div>
+    <span class="pipeline-arrow">&#8594;</span>
+    <div class="pipeline-step"><span class="step-icon">&#9997;&#65039;</span><span class="step-num">Step 3</span>Creates Content</div>
+    <span class="pipeline-arrow">&#8594;</span>
+    <div class="pipeline-step"><span class="step-icon">&#128640;</span><span class="step-num">Step 4</span>Posts</div>
+    <span class="pipeline-arrow">&#8594;</span>
+    <div class="pipeline-step"><span class="step-icon">&#128200;</span><span class="step-num">Step 5</span>Measures</div>
+    <span class="pipeline-arrow">&#8594;</span>
+    <div class="pipeline-step"><span class="step-icon">&#128260;</span><span class="step-num">Step 6</span>Adapts</div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" style="padding-top:0">
+  <h2 class="section-title">What Pro Unlocks</h2>
+  <p class="section-sub">Everything in the free tools, plus autonomous execution that actually posts, measures, and improves your campaigns.</p>
+</section>
+<div class="features">
+  <div class="feature-card">
+    <div class="feature-icon" style="background:var(--pro-gradient)">&#127919;</div>
+    <h3>Autonomous Campaigns</h3>
+    <p>Set a goal and let AI build the full campaign: audience targeting, channel selection, content calendar, posting schedule. It creates, executes, measures results, and adapts the strategy automatically.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">&#128225;</div>
+    <h3>Social Autopilot</h3>
+    <p>Connected to X, LinkedIn, Instagram, and TikTok. AI writes platform-specific posts, schedules at optimal times for your audience, and adjusts based on engagement data.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon" style="background:linear-gradient(135deg,#10b981,#06b6d4)">&#129309;</div>
+    <h3>Creator Marketplace</h3>
+    <p>Hire growth experts or offer your marketing services. Social media managers, SEO specialists, content writers, and PPC pros — all vetted, all rated, all on one platform.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">&#129504;</div>
+    <h3>AI Content Engine</h3>
+    <p>Generates blog posts, email sequences, ad copy, social threads, and landing pages. Trained on your brand voice. Iterates based on performance data from your live campaigns.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon" style="background:linear-gradient(135deg,#f59e0b,#f97316)">&#128200;</div>
+    <h3>Performance Analytics</h3>
+    <p>Unified dashboard across all channels. Track conversions, engagement, reach, and ROI. AI surfaces insights and recommends budget reallocation in real time.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon" style="background:linear-gradient(135deg,#ef4444,#f97316)">&#128231;</div>
+    <h3>Email Sequences</h3>
+    <p>Automated drip campaigns, welcome series, and re-engagement flows. AI writes subject lines, optimizes send times, and A/B tests every variant automatically.</p>
+  </div>
+</div>
+
+<!-- How it works -->
+<section class="section">
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-sub">Four steps from goal to growth. No marketing degree required.</p>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="how-num">1</div>
+      <h4>Set Your Goal</h4>
+      <p>Tell the AI what you want: launch a product, grow followers, drive signups, increase sales. Be specific or keep it broad.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">2</div>
+      <h4>AI Builds Strategy</h4>
+      <p>It researches your niche, picks channels, plans a content calendar, and sets KPIs. Review and approve, or let it run.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">3</div>
+      <h4>Execute Automatically</h4>
+      <p>Content is written, images are generated, posts are scheduled, emails are sent. Everything happens on your approved timeline.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">4</div>
+      <h4>Optimize from Data</h4>
+      <p>AI watches engagement, clicks, conversions. It doubles down on what works and pivots what doesn't. Your campaigns get smarter every day.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section">
+  <h2 class="section-title">Simple Pricing</h2>
+  <p class="section-sub">One plan. Everything included. No per-feature upsells.</p>
+  <div class="pricing-wrap">
+    <div class="pricing-card">
+      <div class="pricing-badge">Coming Soon</div>
+      <div class="pricing-price">$9<span>/mo</span></div>
+      <p class="pricing-note">Cancel anytime. No contracts.</p>
+      <ul class="pricing-features">
+        <li>Autonomous campaign execution</li>
+        <li>Social posting to X, LinkedIn, Instagram, TikTok</li>
+        <li>AI content engine (blog, email, ads, social)</li>
+        <li>Unified analytics dashboard</li>
+        <li>Email drip campaigns and sequences</li>
+        <li>Creator marketplace access</li>
+        <li>Unlimited campaigns</li>
+        <li>Priority support</li>
+        <li>All 21 free tools included</li>
+      </ul>
+      <a href="#waitlist" class="pricing-cta">Join the Waitlist</a>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison -->
+<section class="section">
+  <h2 class="section-title">Free vs Pro</h2>
+  <p class="section-sub">Free tools are always free. Pro adds the execution layer that makes marketing autonomous.</p>
+  <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Free</th>
+          <th class="pro-col">Pro ($9/mo)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>21 marketing tools</td><td class="check">Included</td><td class="pro-col check">Included</td></tr>
+        <tr><td>AI content generation</td><td>Your API key</td><td class="pro-col check">Included (no key needed)</td></tr>
+        <tr><td>Campaign planning</td><td class="check">Manual</td><td class="pro-col check">Autonomous</td></tr>
+        <tr><td>Social posting</td><td class="cross">---</td><td class="pro-col check">Auto-post to 4 platforms</td></tr>
+        <tr><td>Email sequences</td><td class="cross">---</td><td class="pro-col check">Automated drip campaigns</td></tr>
+        <tr><td>Analytics dashboard</td><td class="cross">---</td><td class="pro-col check">Unified cross-channel</td></tr>
+        <tr><td>Performance optimization</td><td class="cross">---</td><td class="pro-col check">AI auto-adapts</td></tr>
+        <tr><td>Creator marketplace</td><td class="cross">---</td><td class="pro-col check">Hire and offer services</td></tr>
+        <tr><td>Brand voice training</td><td class="cross">---</td><td class="pro-col check">AI learns your style</td></tr>
+        <tr><td>Custom domain</td><td class="cross">---</td><td class="pro-col check">your-brand.com</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Waitlist -->
+<section class="waitlist" id="waitlist">
+  <h2>Get Early Access</h2>
+  <p>Join the waitlist and be first to try autonomous marketing. We'll email you when it's ready.</p>
+  <form class="waitlist-form" id="waitlist-form">
+    <input type="email" placeholder="you@example.com" required id="waitlist-email">
+    <button type="submit">Join Waitlist</button>
+  </form>
+  <p class="waitlist-msg" id="waitlist-msg">You're on the list. We'll be in touch.</p>
+</section>
+
+<!-- Cross-store -->
+<section class="xstore">
+  <h3>Open Frontier Stores</h3>
+  <div class="xstore-grid">
+    <a href="https://freemarketingstore.pages.dev" class="xstore-link"><span>&#128227;</span><span>Free Marketing Tools</span></a>
+    <a href="https://freeappstore.online" class="xstore-link"><span>&#128241;</span><span>Apps</span></a>
+    <a href="https://freegamestore.online" class="xstore-link"><span>&#127918;</span><span>Games</span></a>
+    <a href="https://freewebstore.online" class="xstore-link"><span>&#127760;</span><span>Websites</span></a>
+    <a href="https://freeagentstore.online" class="xstore-link"><span>&#129302;</span><span>AI Agents</span></a>
+    <a href="https://freerobotstore.online" class="xstore-link"><span>&#129470;</span><span>Robots</span></a>
+    <a href="https://freequantumstore.pages.dev" class="xstore-link"><span>&#9883;&#65039;</span><span>Quantum</span></a>
+  </div>
+</section>
+
+<footer>
+  ProMarketingStore &mdash; part of <a href="https://openfrontier.pages.dev">Open Frontier</a> |
+  <a href="https://freemarketingstore.pages.dev">Free Tools</a> |
+  <a href="https://openfrontier-docs.pages.dev">Docs</a>
+</footer>
+
+<script>
+(function(){
+  var form=document.getElementById('waitlist-form');
+  var msg=document.getElementById('waitlist-msg');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var email=document.getElementById('waitlist-email').value;
+    var list=JSON.parse(localStorage.getItem('pms-waitlist')||'[]');
+    if(list.indexOf(email)===-1){list.push(email);localStorage.setItem('pms-waitlist',JSON.stringify(list));}
+    msg.style.display='block';
+    form.style.display='none';
+  });
+})();
+</script>
+</body>
+</html>

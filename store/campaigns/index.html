@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Autonomous Campaigns — ProMarketingStore</title>
+<meta name="description" content="AI-powered autonomous marketing campaigns. Set a goal, AI plans the strategy, creates content, posts on schedule, and optimizes from results.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--accent:#f97316;--accent-red:#ef4444;--bg:#fafafa;--text:#1a1a1a;--muted:#6b7280;--panel:#ffffff;--line:#e5e7eb;--pro-gradient:linear-gradient(135deg,#f97316,#ef4444)}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+header{border-bottom:1px solid var(--line);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--panel)}
+.brand{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--text)}
+.brand-icon{width:28px;height:28px;border-radius:6px;background:var(--pro-gradient);display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;font-weight:800}
+.brand-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700}
+.pro-tag{font-size:.55rem;font-weight:800;background:var(--pro-gradient);color:white;padding:.1rem .4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+nav{display:flex;gap:.85rem;font-size:.82rem;font-weight:600;margin-left:auto}
+nav a{color:var(--muted)}nav a:hover{color:var(--text);text-decoration:none}
+
+.hero{text-align:center;padding:3rem 1.5rem 2rem}
+.hero h1{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;margin-bottom:.5rem}
+.hero h1 span{background:var(--pro-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);font-size:.95rem;max-width:600px;margin:0 auto .8rem;line-height:1.6}
+.badge{display:inline-block;padding:.25rem .7rem;border-radius:99px;font-size:.75rem;font-weight:600;margin:.15rem}
+.badge-soon{background:#fef3c7;border-color:#fde68a;color:#92400e;border:1px solid #fde68a}
+
+.section{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+.section-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;margin-bottom:.4rem}
+.section-sub{color:var(--muted);font-size:.85rem;margin-bottom:1.2rem;line-height:1.6}
+
+/* Campaign mockup */
+.mockup{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:2rem}
+.mockup-header{background:var(--pro-gradient);color:white;padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:between;gap:.8rem}
+.mockup-header h3{font-size:.9rem;font-weight:700;flex:1}
+.mockup-status{font-size:.68rem;font-weight:600;background:rgba(255,255,255,.2);padding:.2rem .6rem;border-radius:99px}
+.mockup-body{padding:1.2rem}
+
+.goal-box{background:rgba(249,115,22,.05);border:1px solid rgba(249,115,22,.15);border-radius:10px;padding:1rem;margin-bottom:1rem}
+.goal-label{font-size:.68rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
+.goal-text{font-size:1rem;font-weight:700}
+
+.strategy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.strategy-item{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.6rem .8rem}
+.strategy-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:.2rem;font-weight:600}
+.strategy-value{font-size:.82rem;font-weight:700}
+
+.timeline{display:flex;gap:.3rem;margin-bottom:1rem;overflow-x:auto;padding-bottom:.3rem}
+.timeline-week{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.5rem .7rem;min-width:120px;font-size:.72rem}
+.timeline-week strong{display:block;font-size:.78rem;margin-bottom:.3rem}
+.timeline-week ul{list-style:none;color:var(--muted);line-height:1.8}
+.timeline-week ul li::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.tw-social li::before{background:#3b82f6}.tw-email li::before{background:#8b5cf6}.tw-content li::before{background:#10b981}.tw-ads li::before{background:#f97316}
+
+/* Sample posts */
+.sample-posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem;margin-bottom:1rem}
+.sample-post{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.7rem}
+.sample-post-platform{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:.3rem;display:flex;align-items:center;gap:.3rem}
+.sample-post-text{font-size:.78rem;line-height:1.5;color:var(--text)}
+.sample-post-meta{font-size:.65rem;color:var(--muted);margin-top:.3rem}
+
+/* Analytics mockup */
+.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+.stat-card{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.7rem;text-align:center}
+.stat-value{font-size:1.3rem;font-weight:800}
+.stat-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.stat-change{font-size:.68rem;font-weight:600}
+.stat-up{color:#10b981}.stat-down{color:#ef4444}
+
+.chart-placeholder{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:1rem;text-align:center;margin-bottom:1rem}
+.chart-bars{display:flex;align-items:flex-end;justify-content:center;gap:6px;height:100px;margin-bottom:.5rem}
+.chart-bar{width:24px;border-radius:4px 4px 0 0;background:var(--pro-gradient);opacity:.8;transition:all .3s}
+.chart-bar:hover{opacity:1}
+.chart-label{font-size:.68rem;color:var(--muted)}
+
+/* Feature list */
+.feature-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.8rem;margin-bottom:1.5rem}
+.fl-item{display:flex;gap:.6rem;align-items:flex-start;padding:.8rem;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.fl-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:white;flex-shrink:0}
+.fl-item h4{font-size:.85rem;font-weight:700;margin-bottom:.15rem}
+.fl-item p{font-size:.74rem;color:var(--muted);line-height:1.5}
+
+.cta-section{text-align:center;padding:2rem 0}
+.cta-btn{display:inline-block;background:var(--pro-gradient);color:white;font-size:.88rem;font-weight:700;padding:.7rem 2rem;border-radius:10px;text-decoration:none;transition:all .2s}
+.cta-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.3);text-decoration:none}
+.cta-note{font-size:.75rem;color:var(--muted);margin-top:.5rem}
+
+footer{border-top:1px solid var(--line);padding:1.2rem;text-align:center;font-size:.72rem;color:var(--muted);background:var(--panel)}
+footer a{color:var(--accent)}
+
+@media(max-width:768px){
+  .strategy-grid{grid-template-columns:1fr}
+  .analytics-grid{grid-template-columns:repeat(2,1fr)}
+  .sample-posts{grid-template-columns:1fr}
+  .timeline{flex-direction:column}
+  .hero h1{font-size:1.7rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="brand">
+    <span class="brand-icon">P</span>
+    <span class="brand-name">ProMarketingStore</span>
+    <span class="pro-tag">Pro</span>
+  </a>
+  <nav>
+    <a href="/campaigns/" style="color:var(--text)">Campaigns</a>
+    <a href="/marketplace/">Marketplace</a>
+    <a href="https://freemarketingstore.pages.dev">Free Tools</a>
+    <a href="/">Home</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Autonomous <span>Campaigns</span></h1>
+  <p>Set a goal. AI plans the strategy, creates all content, posts on schedule, and optimizes from live results. Your marketing runs itself.</p>
+  <span class="badge badge-soon">Coming Soon</span>
+</section>
+
+<!-- Campaign Mockup: Goal -->
+<div class="section">
+  <h2 class="section-title">Example Campaign</h2>
+  <p class="section-sub">Here's what an autonomous campaign looks like from goal to results.</p>
+
+  <div class="mockup">
+    <div class="mockup-header">
+      <h3>SaaS Product Launch Campaign</h3>
+      <span class="mockup-status">Active - Week 3 of 4</span>
+    </div>
+    <div class="mockup-body">
+      <!-- Goal -->
+      <div class="goal-box">
+        <div class="goal-label">Campaign Goal</div>
+        <div class="goal-text">Launch my SaaS product and get 500 signups in 30 days</div>
+      </div>
+
+      <!-- Strategy -->
+      <h3 style="font-size:.85rem;font-weight:700;margin-bottom:.5rem">AI-Generated Strategy</h3>
+      <div class="strategy-grid">
+        <div class="strategy-item">
+          <div class="strategy-label">Channels</div>
+          <div class="strategy-value">X, LinkedIn, Email, Blog</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-label">Timeline</div>
+          <div class="strategy-value">4 weeks</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-label">Content Pieces</div>
+          <div class="strategy-value">48 posts, 8 emails, 4 articles</div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <h3 style="font-size:.85rem;font-weight:700;margin-bottom:.5rem">Execution Timeline</h3>
+      <div class="timeline">
+        <div class="timeline-week">
+          <strong>Week 1: Tease</strong>
+          <ul class="tw-social">
+            <li>Problem-awareness posts</li>
+            <li>Behind-the-scenes thread</li>
+            <li>Email: coming soon</li>
+          </ul>
+        </div>
+        <div class="timeline-week">
+          <strong>Week 2: Build</strong>
+          <ul class="tw-content">
+            <li>Blog: why we built this</li>
+            <li>Demo video clips</li>
+            <li>Email: early access</li>
+          </ul>
+        </div>
+        <div class="timeline-week">
+          <strong>Week 3: Launch</strong>
+          <ul class="tw-email">
+            <li>Launch announcement</li>
+            <li>Product Hunt post</li>
+            <li>Email: it's live</li>
+          </ul>
+        </div>
+        <div class="timeline-week">
+          <strong>Week 4: Amplify</strong>
+          <ul class="tw-ads">
+            <li>User testimonials</li>
+            <li>Case study thread</li>
+            <li>Email: last chance offer</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Sample posts -->
+      <h3 style="font-size:.85rem;font-weight:700;margin-bottom:.5rem">Generated Content</h3>
+      <div class="sample-posts">
+        <div class="sample-post">
+          <div class="sample-post-platform">&#120143; X (Twitter)</div>
+          <div class="sample-post-text">We spent 6 months building something we wish existed. Launching next week. Here's the problem we're solving (thread) &#128071;</div>
+          <div class="sample-post-meta">Scheduled: Mon 9:15 AM | Est. impressions: 2.4k</div>
+        </div>
+        <div class="sample-post">
+          <div class="sample-post-platform">&#128188; LinkedIn</div>
+          <div class="sample-post-text">After talking to 200+ marketers, one pattern was clear: everyone plans campaigns manually. We built the solution. Launching Jan 15.</div>
+          <div class="sample-post-meta">Scheduled: Tue 8:00 AM | Est. impressions: 1.8k</div>
+        </div>
+        <div class="sample-post">
+          <div class="sample-post-platform">&#128231; Email</div>
+          <div class="sample-post-text">Subject: "Your marketing is about to change." Preview: We've been building something big. Early access opens Thursday for waitlist members.</div>
+          <div class="sample-post-meta">Scheduled: Wed 7:30 AM | List: 1,240 subscribers</div>
+        </div>
+        <div class="sample-post">
+          <div class="sample-post-platform">&#128247; Instagram</div>
+          <div class="sample-post-text">Behind the scenes of building an AI marketing engine. Swipe to see how it works &#8594; #buildinpublic #saas #marketing</div>
+          <div class="sample-post-meta">Scheduled: Thu 12:00 PM | Est. reach: 900</div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <h3 style="font-size:.85rem;font-weight:700;margin-bottom:.5rem">Live Results (Week 3)</h3>
+      <div class="analytics-grid">
+        <div class="stat-card">
+          <div class="stat-value">347</div>
+          <div class="stat-label">Signups</div>
+          <div class="stat-change stat-up">+42% vs target</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">12.4k</div>
+          <div class="stat-label">Impressions</div>
+          <div class="stat-change stat-up">+18% week over week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">4.2%</div>
+          <div class="stat-label">Conv. Rate</div>
+          <div class="stat-change stat-up">+0.8% from Week 1</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">38%</div>
+          <div class="stat-label">Email Open Rate</div>
+          <div class="stat-change stat-up">+5% vs industry avg</div>
+        </div>
+      </div>
+
+      <div class="chart-placeholder">
+        <div class="chart-bars">
+          <div class="chart-bar" style="height:25%"></div>
+          <div class="chart-bar" style="height:35%"></div>
+          <div class="chart-bar" style="height:30%"></div>
+          <div class="chart-bar" style="height:50%"></div>
+          <div class="chart-bar" style="height:45%"></div>
+          <div class="chart-bar" style="height:60%"></div>
+          <div class="chart-bar" style="height:55%"></div>
+          <div class="chart-bar" style="height:75%"></div>
+          <div class="chart-bar" style="height:70%"></div>
+          <div class="chart-bar" style="height:80%"></div>
+          <div class="chart-bar" style="height:72%"></div>
+          <div class="chart-bar" style="height:85%"></div>
+          <div class="chart-bar" style="height:78%"></div>
+          <div class="chart-bar" style="height:92%"></div>
+          <div class="chart-bar" style="height:88%"></div>
+          <div class="chart-bar" style="height:95%"></div>
+          <div class="chart-bar" style="height:90%"></div>
+          <div class="chart-bar" style="height:100%"></div>
+          <div class="chart-bar" style="height:65%;opacity:.4"></div>
+          <div class="chart-bar" style="height:60%;opacity:.3"></div>
+          <div class="chart-bar" style="height:55%;opacity:.2"></div>
+        </div>
+        <div class="chart-label">Daily signups (past 21 days) &mdash; dashed = projected</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="section">
+  <h2 class="section-title">Campaign Features</h2>
+  <p class="section-sub">Everything you need for end-to-end autonomous marketing.</p>
+  <div class="feature-list">
+    <div class="fl-item">
+      <div class="fl-icon" style="background:var(--pro-gradient)">&#127919;</div>
+      <div><h4>Goal-Based Planning</h4><p>Describe your goal in plain English. AI builds a complete strategy with channels, timeline, and KPIs.</p></div>
+    </div>
+    <div class="fl-item">
+      <div class="fl-icon" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">&#9997;&#65039;</div>
+      <div><h4>AI Content Generation</h4><p>Posts, emails, blog articles, and ad copy created in your brand voice. Platform-optimized formats.</p></div>
+    </div>
+    <div class="fl-item">
+      <div class="fl-icon" style="background:linear-gradient(135deg,#10b981,#06b6d4)">&#128197;</div>
+      <div><h4>Smart Scheduling</h4><p>AI picks optimal posting times per platform based on your audience engagement patterns.</p></div>
+    </div>
+    <div class="fl-item">
+      <div class="fl-icon" style="background:linear-gradient(135deg,#f59e0b,#f97316)">&#128200;</div>
+      <div><h4>Real-Time Analytics</h4><p>Track every metric across all channels in one dashboard. AI surfaces actionable insights.</p></div>
+    </div>
+    <div class="fl-item">
+      <div class="fl-icon" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">&#128260;</div>
+      <div><h4>Auto-Optimization</h4><p>AI adjusts strategy based on performance data. More of what works, less of what doesn't.</p></div>
+    </div>
+    <div class="fl-item">
+      <div class="fl-icon" style="background:linear-gradient(135deg,#ef4444,#f97316)">&#128101;</div>
+      <div><h4>Multi-Campaign</h4><p>Run unlimited campaigns in parallel. Each with its own goal, channels, and content strategy.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <a href="https://freemarketingstore.pages.dev" class="cta-btn">Try Free Tools Now</a>
+  <p class="cta-note">21 free marketing tools available today. No signup required.</p>
+</section>
+
+<footer>
+  ProMarketingStore &mdash; part of <a href="https://openfrontier.pages.dev">Open Frontier</a> |
+  <a href="/">Home</a> |
+  <a href="https://freemarketingstore.pages.dev">Free Tools</a>
+</footer>
+
+</body>
+</html>

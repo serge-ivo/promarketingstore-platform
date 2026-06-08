@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://promarketingstore.pages.dev/sitemap.xml

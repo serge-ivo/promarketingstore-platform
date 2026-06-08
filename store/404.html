@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>404 — ProMarketingStore</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--accent:#f97316;--bg:#fafafa;--text:#1a1a1a;--muted:#6b7280;--panel:#ffffff;--line:#e5e7eb;--pro-gradient:linear-gradient(135deg,#f97316,#ef4444)}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+header{border-bottom:1px solid var(--line);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;background:var(--panel)}
+.brand{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--text)}
+.brand-icon{width:28px;height:28px;border-radius:6px;background:var(--pro-gradient);display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;font-weight:800}
+.brand-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700}
+.pro-tag{font-size:.55rem;font-weight:800;background:var(--pro-gradient);color:white;padding:.1rem .4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+main{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem}
+.error-code{font-family:'Fraunces',serif;font-size:5rem;font-weight:700;background:var(--pro-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.error-msg{font-size:1.1rem;font-weight:600;margin:.5rem 0 .3rem}
+.error-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.back-btn{display:inline-block;background:var(--pro-gradient);color:white;font-size:.85rem;font-weight:700;padding:.6rem 1.5rem;border-radius:10px;text-decoration:none;transition:all .2s}
+.back-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.3);text-decoration:none}
+footer{border-top:1px solid var(--line);padding:1.2rem;text-align:center;font-size:.72rem;color:var(--muted);background:var(--panel)}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <a href="/" class="brand">
+    <span class="brand-icon">P</span>
+    <span class="brand-name">ProMarketingStore</span>
+    <span class="pro-tag">Pro</span>
+  </a>
+</header>
+<main>
+  <div>
+    <div class="error-code">404</div>
+    <p class="error-msg">Page not found</p>
+    <p class="error-sub">This page doesn't exist yet. ProMarketingStore is coming soon.</p>
+    <a href="/" class="back-btn">Back to Home</a>
+  </div>
+</main>
+<footer>ProMarketingStore &mdash; part of <a href="https://openfrontier.pages.dev">Open Frontier</a></footer>
+</body>
+</html>

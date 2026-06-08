@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Marketing Marketplace — ProMarketingStore</title>
+<meta name="description" content="Hire vetted marketing professionals or offer your services. Social media managers, SEO experts, content writers, and growth hackers.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--accent:#f97316;--accent-red:#ef4444;--bg:#fafafa;--text:#1a1a1a;--muted:#6b7280;--panel:#ffffff;--line:#e5e7eb;--pro-gradient:linear-gradient(135deg,#f97316,#ef4444)}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+header{border-bottom:1px solid var(--line);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--panel)}
+.brand{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--text)}
+.brand-icon{width:28px;height:28px;border-radius:6px;background:var(--pro-gradient);display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;font-weight:800}
+.brand-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700}
+.pro-tag{font-size:.55rem;font-weight:800;background:var(--pro-gradient);color:white;padding:.1rem .4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+nav{display:flex;gap:.85rem;font-size:.82rem;font-weight:600;margin-left:auto}
+nav a{color:var(--muted)}nav a:hover{color:var(--text);text-decoration:none}
+
+.hero{text-align:center;padding:3rem 1.5rem 2rem}
+.hero h1{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;margin-bottom:.5rem}
+.hero h1 span{background:var(--pro-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);font-size:.95rem;max-width:600px;margin:0 auto .8rem;line-height:1.6}
+.badge{display:inline-block;padding:.25rem .7rem;border-radius:99px;font-size:.75rem;font-weight:600;margin:.15rem}
+.badge-soon{background:#fef3c7;border-color:#fde68a;color:#92400e;border:1px solid #fde68a}
+
+.section{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.section-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:.4rem}
+.section-sub{color:var(--muted);font-size:.85rem;text-align:center;max-width:600px;margin:0 auto 1.5rem;line-height:1.6}
+
+/* Provider cards */
+.providers{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-bottom:2rem}
+.provider{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.2rem;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.provider:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.provider-header{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+.provider-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:white;flex-shrink:0}
+.provider-info{flex:1;min-width:0}
+.provider-name{font-size:.95rem;font-weight:700}
+.provider-title{font-size:.75rem;color:var(--muted)}
+.provider-rating{display:flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:600}
+.stars{color:#f59e0b}
+.rating-num{color:var(--muted)}
+.provider-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.6rem}
+.ptag{font-size:.65rem;font-weight:600;padding:.2rem .5rem;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.provider-bio{font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:.8rem}
+.provider-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.6rem;border-top:1px solid var(--line)}
+.provider-rate{font-size:.85rem;font-weight:700}
+.provider-rate span{font-size:.72rem;color:var(--muted);font-weight:500}
+.provider-projects{font-size:.72rem;color:var(--muted)}
+
+/* Become a provider */
+.become{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:2rem;text-align:center;max-width:700px;margin:0 auto 2rem;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.become h2{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;margin-bottom:.4rem}
+.become p{font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.become-perks{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.2rem;text-align:center}
+.perk{padding:.6rem}
+.perk-icon{font-size:1.3rem;margin-bottom:.3rem}
+.perk h4{font-size:.8rem;font-weight:700;margin-bottom:.15rem}
+.perk p{font-size:.72rem;color:var(--muted);line-height:1.4}
+
+/* Waitlist */
+.waitlist{max-width:500px;margin:0 auto;text-align:center;padding:2rem 1.5rem}
+.waitlist h2{font-family:'Fraunces',serif;font-size:1.3rem;margin-bottom:.3rem}
+.waitlist p{font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.waitlist-form{display:flex;gap:.4rem;max-width:400px;margin:0 auto}
+.waitlist-form input{flex:1;padding:.6rem .8rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;font-family:inherit;outline:none}
+.waitlist-form input:focus{border-color:var(--accent)}
+.waitlist-form button{background:var(--pro-gradient);color:white;border:none;padding:.6rem 1.2rem;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.waitlist-form button:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.3)}
+.waitlist-msg{font-size:.78rem;margin-top:.5rem;color:#10b981;display:none}
+
+.cta-btn{display:inline-block;background:var(--pro-gradient);color:white;font-size:.88rem;font-weight:700;padding:.7rem 2rem;border-radius:10px;text-decoration:none;transition:all .2s}
+.cta-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.3);text-decoration:none}
+
+footer{border-top:1px solid var(--line);padding:1.2rem;text-align:center;font-size:.72rem;color:var(--muted);background:var(--panel)}
+footer a{color:var(--accent)}
+
+@media(max-width:768px){
+  .providers{grid-template-columns:1fr}
+  .become-perks{grid-template-columns:1fr}
+  .hero h1{font-size:1.7rem}
+  .waitlist-form{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="brand">
+    <span class="brand-icon">P</span>
+    <span class="brand-name">ProMarketingStore</span>
+    <span class="pro-tag">Pro</span>
+  </a>
+  <nav>
+    <a href="/campaigns/">Campaigns</a>
+    <a href="/marketplace/" style="color:var(--text)">Marketplace</a>
+    <a href="https://freemarketingstore.pages.dev">Free Tools</a>
+    <a href="/">Home</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Marketing <span>Marketplace</span></h1>
+  <p>Hire vetted marketing professionals or offer your own expertise. From social media management to growth hacking, find the right person for the job.</p>
+  <span class="badge badge-soon">Coming Soon</span>
+</section>
+
+<!-- Providers -->
+<section class="section">
+  <h2 class="section-title">Featured Providers</h2>
+  <p class="section-sub">Vetted marketing professionals ready to grow your business. Ratings, portfolios, and transparent pricing.</p>
+
+  <div class="providers">
+    <div class="provider">
+      <div class="provider-header">
+        <div class="provider-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">&#128104;&#8205;&#128187;</div>
+        <div class="provider-info">
+          <div class="provider-name">Alex Rivera</div>
+          <div class="provider-title">Social Media Manager</div>
+        </div>
+        <div class="provider-rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="rating-num">4.9</span></div>
+      </div>
+      <div class="provider-tags">
+        <span class="ptag">Instagram</span><span class="ptag">TikTok</span><span class="ptag">Content Strategy</span><span class="ptag">Community</span>
+      </div>
+      <p class="provider-bio">Grew 3 brands from 0 to 50k+ followers. Specializes in visual content strategy for DTC brands. Full social media management including content creation and engagement.</p>
+      <div class="provider-footer">
+        <div class="provider-rate">$75<span>/hr</span></div>
+        <div class="provider-projects">47 projects completed</div>
+      </div>
+    </div>
+
+    <div class="provider">
+      <div class="provider-header">
+        <div class="provider-avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">&#128105;&#8205;&#128187;</div>
+        <div class="provider-info">
+          <div class="provider-name">Sarah Chen</div>
+          <div class="provider-title">SEO Expert</div>
+        </div>
+        <div class="provider-rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="rating-num">4.8</span></div>
+      </div>
+      <div class="provider-tags">
+        <span class="ptag">Technical SEO</span><span class="ptag">Content Strategy</span><span class="ptag">Link Building</span><span class="ptag">Analytics</span>
+      </div>
+      <p class="provider-bio">10+ years in SEO. Helped SaaS companies increase organic traffic by 300%+ on average. Full technical audits, content strategy, and ongoing optimization.</p>
+      <div class="provider-footer">
+        <div class="provider-rate">$2,500<span>/project</span></div>
+        <div class="provider-projects">82 projects completed</div>
+      </div>
+    </div>
+
+    <div class="provider">
+      <div class="provider-header">
+        <div class="provider-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">&#128104;</div>
+        <div class="provider-info">
+          <div class="provider-name">Marcus Williams</div>
+          <div class="provider-title">Content Writer</div>
+        </div>
+        <div class="provider-rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span><span class="rating-num">4.7</span></div>
+      </div>
+      <div class="provider-tags">
+        <span class="ptag">Blog Posts</span><span class="ptag">Email Copy</span><span class="ptag">Landing Pages</span><span class="ptag">SaaS</span>
+      </div>
+      <p class="provider-bio">Writes conversion-focused content for tech and SaaS companies. Published in TechCrunch, HubSpot, and Ahrefs blog. Fast turnaround, SEO-optimized.</p>
+      <div class="provider-footer">
+        <div class="provider-rate">$0.15<span>/word</span></div>
+        <div class="provider-projects">156 projects completed</div>
+      </div>
+    </div>
+
+    <div class="provider">
+      <div class="provider-header">
+        <div class="provider-avatar" style="background:var(--pro-gradient)">&#128105;</div>
+        <div class="provider-info">
+          <div class="provider-name">Priya Sharma</div>
+          <div class="provider-title">Growth Hacker</div>
+        </div>
+        <div class="provider-rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="rating-num">5.0</span></div>
+      </div>
+      <div class="provider-tags">
+        <span class="ptag">Growth Loops</span><span class="ptag">Viral Mechanics</span><span class="ptag">PLG</span><span class="ptag">A/B Testing</span>
+      </div>
+      <p class="provider-bio">Ex-growth at 2 YC-backed startups. Builds product-led growth loops, referral systems, and viral mechanics. Focuses on sustainable, compounding growth strategies.</p>
+      <div class="provider-footer">
+        <div class="provider-rate">$150<span>/hr</span></div>
+        <div class="provider-projects">31 projects completed</div>
+      </div>
+    </div>
+
+    <div class="provider">
+      <div class="provider-header">
+        <div class="provider-avatar" style="background:linear-gradient(135deg,#f59e0b,#f97316)">&#128104;</div>
+        <div class="provider-info">
+          <div class="provider-name">David Park</div>
+          <div class="provider-title">Email Marketer</div>
+        </div>
+        <div class="provider-rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="rating-num">4.9</span></div>
+      </div>
+      <div class="provider-tags">
+        <span class="ptag">Drip Campaigns</span><span class="ptag">Automation</span><span class="ptag">Segmentation</span><span class="ptag">Deliverability</span>
+      </div>
+      <p class="provider-bio">Email specialist with 40%+ average open rates. Builds automated sequences that nurture and convert. Expert in Klaviyo, ConvertKit, and custom SMTP setups.</p>
+      <div class="provider-footer">
+        <div class="provider-rate">$1,800<span>/project</span></div>
+        <div class="provider-projects">63 projects completed</div>
+      </div>
+    </div>
+
+    <div class="provider">
+      <div class="provider-header">
+        <div class="provider-avatar" style="background:linear-gradient(135deg,#ef4444,#f97316)">&#128105;</div>
+        <div class="provider-info">
+          <div class="provider-name">Emma Torres</div>
+          <div class="provider-title">PPC Specialist</div>
+        </div>
+        <div class="provider-rating"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span><span class="rating-num">4.6</span></div>
+      </div>
+      <div class="provider-tags">
+        <span class="ptag">Google Ads</span><span class="ptag">Meta Ads</span><span class="ptag">LinkedIn Ads</span><span class="ptag">ROAS Optimization</span>
+      </div>
+      <p class="provider-bio">Managed $2M+ in ad spend across Google, Meta, and LinkedIn. Average 3.5x ROAS for B2B SaaS clients. Full-funnel campaign management from creative to conversion.</p>
+      <div class="provider-footer">
+        <div class="provider-rate">$95<span>/hr</span></div>
+        <div class="provider-projects">74 projects completed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Become a Provider -->
+<section class="section" style="padding-top:0">
+  <div class="become">
+    <h2>Become a Provider</h2>
+    <p>Got marketing skills? List your services on the marketplace. Set your own rates, choose your clients, and grow your freelance business.</p>
+    <div class="become-perks">
+      <div class="perk">
+        <div class="perk-icon">&#128176;</div>
+        <h4>Set Your Rates</h4>
+        <p>Hourly, per-project, or retainer. You choose the pricing model that works for you.</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">&#127919;</div>
+        <h4>Matched Clients</h4>
+        <p>AI matches you with clients who need exactly your skillset. No cold pitching.</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">&#9733;</div>
+        <h4>Build Your Reputation</h4>
+        <p>Verified reviews, portfolio showcase, and skill badges. Stand out from the crowd.</p>
+      </div>
+    </div>
+    <a href="#waitlist" class="cta-btn">Join as a Provider</a>
+  </div>
+</section>
+
+<!-- Waitlist -->
+<section class="waitlist" id="waitlist">
+  <h2>Get Early Access</h2>
+  <p>Join the waitlist to be first on the marketplace — as a client or a provider.</p>
+  <form class="waitlist-form" id="waitlist-form">
+    <input type="email" placeholder="you@example.com" required id="waitlist-email">
+    <button type="submit">Join Waitlist</button>
+  </form>
+  <p class="waitlist-msg" id="waitlist-msg">You're on the list. We'll be in touch.</p>
+</section>
+
+<footer>
+  ProMarketingStore &mdash; part of <a href="https://openfrontier.pages.dev">Open Frontier</a> |
+  <a href="/">Home</a> |
+  <a href="https://freemarketingstore.pages.dev">Free Tools</a>
+</footer>
+
+<script>
+(function(){
+  var form=document.getElementById('waitlist-form');
+  var msg=document.getElementById('waitlist-msg');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var email=document.getElementById('waitlist-email').value;
+    var list=JSON.parse(localStorage.getItem('pms-marketplace-waitlist')||'[]');
+    if(list.indexOf(email)===-1){list.push(email);localStorage.setItem('pms-marketplace-waitlist',JSON.stringify(list));}
+    msg.style.display='block';
+    form.style.display='none';
+  });
+})();
+</script>
+</body>
+</html>
