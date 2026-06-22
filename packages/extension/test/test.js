@@ -42,6 +42,7 @@ const facebookSrc = readFile('src/content/facebook.js');
 const xSrc = readFile('src/content/x.js');
 const tiktokSrc = readFile('src/content/tiktok.js');
 const instagramSrc = readFile('src/content/instagram.js');
+const linkedinSrc = readFile('src/content/linkedin.js');
 const serviceWorkerSrc = readFile('src/background/service-worker.js');
 const typesSrc = readFile('src/shared/types.js');
 
@@ -65,17 +66,19 @@ test('permissions include activeTab and scripting', () => {
   assert.ok(manifest.permissions.includes('scripting'), 'missing scripting');
 });
 
-test('host_permissions cover all four platforms', () => {
+test('host_permissions cover all five platforms', () => {
   const hosts = manifest.host_permissions;
   assert.ok(hosts.some(h => h.includes('facebook.com')), 'missing facebook host');
   assert.ok(hosts.some(h => h.includes('x.com')), 'missing x host');
   assert.ok(hosts.some(h => h.includes('instagram.com')), 'missing instagram host');
   assert.ok(hosts.some(h => h.includes('tiktok.com')), 'missing tiktok host');
+  assert.ok(hosts.some(h => h.includes('linkedin.com')), 'missing linkedin host');
 });
 
 test('background.service_worker points to correct file', () => {
   assert.equal(manifest.background.service_worker, 'src/background/service-worker.js');
-  assert.equal(manifest.background.type, 'module');
+  // "type": "module" was removed — imports are inlined in service-worker.js
+  assert.equal(manifest.background.type, undefined, 'type should not be set (imports are inlined)');
 });
 
 test('content_scripts entries match platform URLs to correct JS files', () => {
@@ -162,6 +165,12 @@ test('instagram.js listens for MSG_POST = "pms:post"', () => {
   assert.ok(instagramSrc.includes('message.type !== MSG_POST'), 'missing type check');
 });
 
+test('linkedin.js listens for MSG_POST = "pms:post"', () => {
+  assert.ok(linkedinSrc.includes(`'${MSG_POST_VALUE}'`), 'MSG_POST constant not found');
+  assert.ok(linkedinSrc.includes('chrome.runtime.onMessage.addListener'), 'missing message listener');
+  assert.ok(linkedinSrc.includes('message.type !== MSG_POST'), 'missing type check');
+});
+
 test('shared/types.js exports matching MSG.POST value', () => {
   assert.ok(typesSrc.includes(`POST: '${MSG_POST_VALUE}'`), 'MSG.POST should be pms:post');
 });
@@ -173,7 +182,7 @@ test('content scripts and types.js agree on MSG_POST value', () => {
   const typesValue = typesMatch[1];
 
   // Each content script should define MSG_POST with same value
-  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc], ['instagram', instagramSrc]]) {
+  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc], ['instagram', instagramSrc], ['linkedin', linkedinSrc]]) {
     const csMatch = src.match(/const MSG_POST\s*=\s*'([^']+)'/);
     assert.ok(csMatch, `${name}.js: could not parse MSG_POST constant`);
     assert.equal(csMatch[1], typesValue, `${name}.js MSG_POST ('${csMatch[1]}') != types.js MSG.POST ('${typesValue}')`);
@@ -218,6 +227,17 @@ test('tiktok.js returns { ok: false, error } for missing UI elements', () => {
   assert.ok(errorReturns >= 3, `expected at least 3 error returns, found ${errorReturns}`);
 });
 
+test('linkedin.js has try/catch returning { ok: false, error }', () => {
+  assert.ok(linkedinSrc.includes('try {'), 'missing try block');
+  assert.ok(linkedinSrc.includes('catch (err)'), 'missing catch block');
+  assert.ok(linkedinSrc.includes('ok: false, error: err.message'), 'catch should return { ok: false, error: err.message }');
+});
+
+test('linkedin.js returns { ok: false, error } for missing UI elements', () => {
+  const errorReturns = (linkedinSrc.match(/return\s*\{\s*ok:\s*false,\s*error:/g) || []).length;
+  assert.ok(errorReturns >= 4, `expected at least 4 error returns, found ${errorReturns}`);
+});
+
 test('instagram.js returns { ok: false, error } (API-only stub)', () => {
   assert.ok(instagramSrc.includes('ok: false'), 'should return ok: false');
   assert.ok(instagramSrc.includes('error:'), 'should include error message');
@@ -229,10 +249,11 @@ test('instagram.js returns { ok: false, error } (API-only stub)', () => {
 // ---------------------------------------------------------------------------
 console.log('\n--- service worker routing ---');
 
-test('service worker imports from shared/types.js', () => {
-  assert.ok(serviceWorkerSrc.includes("from '../shared/types.js'"), 'should import from types.js');
-  assert.ok(serviceWorkerSrc.includes('MSG'), 'should import MSG');
-  assert.ok(serviceWorkerSrc.includes('PLATFORMS'), 'should import PLATFORMS');
+test('service worker defines PLATFORMS and MSG inline', () => {
+  // Imports were inlined to avoid ES module issues in Chrome service workers
+  assert.ok(serviceWorkerSrc.includes('const PLATFORMS'), 'should define PLATFORMS inline');
+  assert.ok(serviceWorkerSrc.includes('const MSG'), 'should define MSG inline');
+  assert.ok(serviceWorkerSrc.includes("POST: 'pms:post'"), 'MSG.POST should be pms:post');
 });
 
 test('service worker listens for external messages (onMessageExternal)', () => {
@@ -272,6 +293,7 @@ test('service worker has correct platform URLs for tab routing', () => {
   assert.ok(serviceWorkerSrc.includes("x: 'https://x.com/compose/post'"), 'x URL');
   assert.ok(serviceWorkerSrc.includes("instagram: 'https://www.instagram.com/'"), 'instagram URL');
   assert.ok(serviceWorkerSrc.includes("tiktok: 'https://www.tiktok.com/upload'"), 'tiktok URL');
+  assert.ok(serviceWorkerSrc.includes("linkedin: 'https://www.linkedin.com/feed/'"), 'linkedin URL');
 });
 
 test('service worker sends MSG.POST to content scripts', () => {
@@ -298,13 +320,17 @@ test('service worker handles MSG.STATUS requests', () => {
   assert.ok(serviceWorkerSrc.includes('getStatus'), 'should call getStatus function');
 });
 
+test('service worker PLATFORMS includes linkedin', () => {
+  assert.ok(serviceWorkerSrc.includes("'linkedin'"), 'inlined PLATFORMS should include linkedin');
+});
+
 // ---------------------------------------------------------------------------
 // 6. base64ToBlob function
 // ---------------------------------------------------------------------------
 console.log('\n--- base64ToBlob ---');
 
-test('facebook.js, x.js, tiktok.js all define base64ToBlob', () => {
-  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc]]) {
+test('facebook.js, x.js, tiktok.js, linkedin.js all define base64ToBlob', () => {
+  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc], ['linkedin', linkedinSrc]]) {
     assert.ok(src.includes('function base64ToBlob(base64, mimeType)'), `${name}.js missing base64ToBlob`);
   }
 });
@@ -337,7 +363,7 @@ test('base64ToBlob handles all 256 byte values correctly', () => {
 });
 
 test('base64ToBlob creates Blob with correct mimeType', () => {
-  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc]]) {
+  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc], ['linkedin', linkedinSrc]]) {
     assert.ok(
       src.includes('new Blob([arr], { type: mimeType })'),
       `${name}.js base64ToBlob should create Blob with { type: mimeType }`
@@ -350,7 +376,7 @@ test('base64ToBlob creates Blob with correct mimeType', () => {
 // ---------------------------------------------------------------------------
 console.log('\n--- shared types ---');
 
-test('PLATFORMS includes all four platforms', () => {
+test('PLATFORMS includes core platforms', () => {
   assert.ok(typesSrc.includes("'facebook'"), 'PLATFORMS should include facebook');
   assert.ok(typesSrc.includes("'x'"), 'PLATFORMS should include x');
   assert.ok(typesSrc.includes("'instagram'"), 'PLATFORMS should include instagram');
@@ -370,7 +396,7 @@ test('MSG exports POST, POST_RESULT, STATUS, STATUS_RESULT', () => {
 console.log('\n--- async listener pattern ---');
 
 test('all content scripts return true from onMessage listener (async pattern)', () => {
-  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc], ['instagram', instagramSrc]]) {
+  for (const [name, src] of [['facebook', facebookSrc], ['x', xSrc], ['tiktok', tiktokSrc], ['instagram', instagramSrc], ['linkedin', linkedinSrc]]) {
     assert.ok(src.includes('return true;'), `${name}.js should return true from listener for async sendResponse`);
   }
 });
