@@ -51,8 +51,14 @@ async function postToFacebook({ caption, mediaUrl, mediaBase64 }) {
     }
 
     // Step 3: Fill caption
-    const editor = findEditor();
-    if (!editor) return { ok: false, error: 'Could not find caption editor' };
+    // Wait for editor to appear in the dialog
+    let editor = null;
+    for (let i = 0; i < 10; i++) {
+      editor = findEditor();
+      if (editor) break;
+      await wait(500);
+    }
+    if (!editor) return { ok: false, error: 'Could not find caption editor after 5s' };
     editor.focus();
     await wait(300);
     // Use execCommand for contenteditable
@@ -88,7 +94,15 @@ function findButton(pattern) {
 }
 
 function findEditor() {
-  const editors = document.querySelectorAll('[contenteditable="true"][role="textbox"]');
+  // Try specific first, then broader
+  let editors = document.querySelectorAll('[contenteditable="true"][role="textbox"]');
+  if (editors.length === 0) editors = document.querySelectorAll('[contenteditable="true"][data-lexical-editor="true"]');
+  if (editors.length === 0) editors = document.querySelectorAll('[role="dialog"] [contenteditable="true"]');
+  if (editors.length === 0) editors = document.querySelectorAll('[contenteditable="true"]');
+  // Return the last visible one
+  for (let i = editors.length - 1; i >= 0; i--) {
+    if (editors[i].offsetParent !== null) return editors[i];
+  }
   return editors[editors.length - 1] || null;
 }
 

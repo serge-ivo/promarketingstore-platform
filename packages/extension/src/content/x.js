@@ -61,8 +61,14 @@ async function postToX({ caption, mediaBase64 }) {
     }
     await wait(1500);
 
-    // Click Post
-    const postBtn = document.querySelector('[data-testid="tweetButton"]');
+    // Click Post — try data-testid first, fall back to text match
+    let postBtn = document.querySelector('[data-testid="tweetButton"]');
+    if (!postBtn) {
+      const btns = document.querySelectorAll('[role="button"]');
+      for (const btn of btns) {
+        if (/^Post$/i.test(btn.textContent?.trim())) { postBtn = btn; break; }
+      }
+    }
     if (!postBtn) return { ok: false, error: 'Could not find Post button' };
     postBtn.click();
     await wait(5000);

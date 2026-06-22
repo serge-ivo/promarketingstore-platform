@@ -2,7 +2,9 @@
 // Receives messages from: external (agents via HTTP), popup, or native messaging
 // Routes to: content scripts on the target platform tab
 
-import { MSG, PLATFORMS } from '../shared/types.js';
+// Inline constants (avoid ES module import issues in Chrome service workers)
+const PLATFORMS = ['facebook', 'x', 'instagram', 'tiktok', 'linkedin'];
+const MSG = { POST: 'pms:post', POST_RESULT: 'pms:post:result', STATUS: 'pms:status', STATUS_RESULT: 'pms:status:result' };
 
 // Listen for external messages (from agents/localhost)
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
