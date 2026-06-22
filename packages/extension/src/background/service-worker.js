@@ -63,6 +63,7 @@ async function findOrCreateTab(platform) {
     x: 'https://x.com/compose/post',
     instagram: 'https://www.instagram.com/',
     tiktok: 'https://www.tiktok.com/upload',
+    linkedin: 'https://www.linkedin.com/feed/',
   };
 
   // Look for existing tab
@@ -93,6 +94,7 @@ async function getStatus() {
       x: 'https://x.com/*',
       instagram: 'https://www.instagram.com/*',
       tiktok: 'https://www.tiktok.com/*',
+      linkedin: 'https://www.linkedin.com/*',
     };
     const tabs = await chrome.tabs.query({ url: urls[platform] });
     results[platform] = { hasTab: tabs.length > 0, tabCount: tabs.length };
