@@ -1,0 +1,34 @@
+{
+  "name": "@pms/platform",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serge-ivo/promarketingstore-platform.git"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "lint": "biome lint packages",
+    "commitlint": "commitlint --from HEAD~1 --to HEAD",
+    "format": "biome format --write .",
+    "prepare": "husky || true",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.0",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@vitest/coverage-v8": "^4.1.9",
+    "husky": "^9.1.7",
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.8"
+  }
+}

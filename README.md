@@ -17,14 +17,67 @@ ProMarketingStore is the paid tier of FreeMarketingStore. While FreeMarketingSto
 ```
 pms/platform/
 ├── packages/
-│   ├── sdk/           @promarketingstore/sdk — marketing API client
-│   ├── agent-teams/   AI marketing agents (PO → Strategist → Content → Analytics)
-│   ├── backend/       Hono API worker (campaigns, scheduling, analytics, billing)
-│   └── cli/           pms CLI
+│   ├── backend/       Hono API Worker control plane
+│   ├── agent-brain/   internal Durable Object Worker for campaign memory/state
+│   └── social/        provider adapters for organic publishing
 ├── store/             Store site (promarketingstore.online)
-├── workers/           CF Workers (agent, scheduler, analytics, admin)
-└── .github/workflows/ CI/CD
+├── schema.sql         D1 schema for users, campaigns, posts, accounts, metrics
+└── PLAN-AGENTIC-CAMPAIGN-BRAIN.md
 ```
+
+## Install
+
+Requirements:
+
+- Node.js 22+
+- pnpm 10+
+- Cloudflare Wrangler 4+
+
+```bash
+pnpm install
+pnpm build
+pnpm typecheck
+pnpm test
+pnpm lint
+```
+
+## Local Usage
+
+Run the API Worker:
+
+```bash
+cd packages/backend
+pnpm dev
+```
+
+Run the internal campaign brain Worker in another terminal:
+
+```bash
+cd packages/agent-brain
+pnpm dev
+```
+
+Apply D1 migrations before using real campaign data:
+
+```bash
+cd packages/backend
+pnpm db:migrate:local
+```
+
+## Required Configuration
+
+The backend Worker expects these Cloudflare bindings and secrets:
+
+- `DB`: D1 database binding.
+- `AGENT_BRAIN`: service binding to `promarketingstore-agent-brain`.
+- `SESSION_SIGNING_KEY`: signs local PMS sessions.
+- `INTERNAL_TOKEN`: shared backend-to-agent-brain service token.
+- `SOCIAL_TOKEN_ENCRYPTION_KEY`: encrypts OAuth/page tokens at rest.
+- `META_APP_ID`, `META_APP_SECRET`: Meta app credentials.
+- `META_REDIRECT_URI`: public OAuth callback URL, optional when `CORS_ORIGIN` is correct.
+- `META_GRAPH_VERSION`: optional, defaults to `v25.0`.
+
+The current publish MVP supports connected Facebook Pages for approved text/link posts. Instagram account discovery is wired through Meta OAuth; Instagram publishing needs the media pipeline to provide public image URLs.
 
 ## Agent Team (Marketing-specific)
 

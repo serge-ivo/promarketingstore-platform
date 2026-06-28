@@ -1,0 +1,17 @@
+{
+  "name": "@pms/social",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260610.1"
+  }
+}

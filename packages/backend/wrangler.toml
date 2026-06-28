@@ -6,12 +6,34 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "pms"
-database_id = "placeholder"
+database_id = "79ec4141-9e89-4022-8f08-a7ea6f9cda37"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "pms-media"
+
+# [[kv_namespaces]]
+# binding = "KV"
+# id = "placeholder"   # wrangler kv namespace create PMS_KV
 
 [vars]
 CORS_ORIGIN = "https://promarketingstore.pages.dev"
 
+[[services]]
+binding = "AGENT_BRAIN"
+service = "promarketingstore-agent-brain"
+
+[triggers]
+crons = ["* * * * *", "0 3 * * *"]
+
 # Secrets (set via `wrangler secret put`):
-#   SESSION_SIGNING_KEY       (signs PMS session JWTs)
-#   GOOGLE_CLIENT_ID          (Google OAuth app)
-#   GOOGLE_CLIENT_SECRET      (Google OAuth app)
+#   SESSION_SIGNING_KEY           (signs PMS session JWTs)
+#   INTERNAL_TOKEN                (backend -> agent-brain service auth)
+#   SOCIAL_TOKEN_ENCRYPTION_KEY   (encrypts Meta/social tokens)
+#   META_APP_ID                   (Meta app id)
+#   META_APP_SECRET               (Meta app secret)
+#   META_REDIRECT_URI             (OAuth callback, defaults to CORS_ORIGIN/v1/social/meta/oauth/callback)
+#   X_CLIENT_ID                   (X OAuth 2.0 client ID)
+#   X_CLIENT_SECRET               (X OAuth 2.0 client secret)
+#   GOOGLE_CLIENT_ID              (Google OAuth app)
+#   GOOGLE_CLIENT_SECRET          (Google OAuth app)

@@ -1,0 +1,22 @@
+name = "promarketingstore-agent-brain"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+PMS_API_BASE = "https://api.promarketingstore.online"
+
+[[durable_objects.bindings]]
+name = "CAMPAIGN_AGENT"
+class_name = "CampaignAgent"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["CampaignAgent"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pms"
+database_id = "79ec4141-9e89-4022-8f08-a7ea6f9cda37"
+
+# INTERNAL_TOKEN should match the backend Worker once service bindings are wired.

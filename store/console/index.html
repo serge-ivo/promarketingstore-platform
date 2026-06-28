@@ -109,6 +109,31 @@ input,textarea,select{font-family:inherit;font-size:.85rem}
 .cal-dot[data-platform="email"]{background:#16a34a}
 .cal-dot[data-platform="tiktok"]{background:#1a1a1a}
 
+/* Post task board */
+.board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.8rem}
+.board-summary{font-size:.78rem;color:var(--muted)}
+.board-actions{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.board-actions select{padding:.38rem .55rem;border:1px solid var(--line);border-radius:7px;background:var(--panel);outline:none}
+.kanban-board{display:grid;grid-template-columns:repeat(6,minmax(210px,1fr));gap:.65rem;align-items:start;overflow-x:auto;padding-bottom:.5rem}
+.kanban-column{border:1px solid var(--line);border-radius:8px;background:#f9fafb;min-height:260px;min-width:210px}
+.kanban-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.65rem .7rem;border-bottom:1px solid var(--line);background:var(--panel);border-radius:8px 8px 0 0}
+.kanban-title{display:flex;align-items:center;gap:.42rem;font-size:.78rem;font-weight:800}
+.kanban-dot{width:.52rem;height:.52rem;border-radius:999px;background:var(--muted);flex-shrink:0}
+.kanban-count{font-size:.68rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.08rem .42rem}
+.kanban-items{display:flex;flex-direction:column;gap:.5rem;padding:.6rem;min-height:210px}
+.kanban-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.7rem;cursor:grab;transition:border-color .15s,box-shadow .15s,transform .15s}
+.kanban-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.05);transform:translateY(-1px)}
+.kanban-card.dragging{opacity:.55}
+.kanban-card-title{font-size:.8rem;font-weight:700;line-height:1.35;margin-bottom:.35rem;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.kanban-card-meta{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;font-size:.68rem;color:var(--muted);margin-bottom:.45rem}
+.kanban-pill{display:inline-flex;align-items:center;padding:.12rem .42rem;border-radius:999px;background:#f3f4f6;font-weight:700;color:var(--muted)}
+.kanban-platform{color:#fff;text-transform:uppercase;letter-spacing:.2px}
+.kanban-card-actions{display:flex;gap:.3rem;flex-wrap:wrap}
+.kanban-card-actions button{font-size:.68rem;padding:.24rem .45rem;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--muted);font-weight:700}
+.kanban-card-actions button:hover{border-color:var(--accent);color:var(--accent)}
+.kanban-empty{padding:.7rem;color:var(--muted);font-size:.76rem;line-height:1.45}
+.board-drop-active{outline:2px dashed rgba(249,115,22,.35);outline-offset:-6px}
+
 /* Content library */
 .content-filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
 .filter-btn{padding:.3rem .7rem;border-radius:6px;font-size:.73rem;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--muted);transition:all .15s}
@@ -194,7 +219,16 @@ canvas{width:100%;height:200px}
     <span class="brand-tag">Console</span>
   </div>
   <nav class="sidebar-nav" id="sidebarNav">
-    <div class="nav-item active" data-view="campaigns"><span class="icon">&#9776;</span>Campaigns</div>
+    <div class="nav-item active" data-view="dashboard"><span class="icon">&#127968;</span>Dashboard</div>
+    <div class="nav-item" data-view="contentSources"><span class="icon">&#128225;</span>Sources</div>
+    <div class="nav-item" data-view="compose"><span class="icon">&#9998;</span>Compose</div>
+    <div class="nav-item" data-view="postHistory"><span class="icon">&#128203;</span>Post History</div>
+    <div class="nav-item" data-view="postCalendar"><span class="icon">&#128197;</span>Calendar</div>
+    <div class="nav-item" data-view="connections"><span class="icon">&#128279;</span>Connections</div>
+    <div class="nav-item" data-view="brandVoice"><span class="icon">&#127908;</span>Brand Voice</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" data-view="campaigns"><span class="icon">&#9776;</span>Campaigns</div>
+    <div class="nav-item" data-view="board"><span class="icon">&#9638;</span>Post Board</div>
     <div class="nav-item" data-view="agent"><span class="icon">&#128172;</span>Agent Chat</div>
     <div class="nav-item" data-view="calendar"><span class="icon">&#128197;</span>Calendar</div>
     <div class="nav-item" data-view="content"><span class="icon">&#128196;</span>Content Library</div>
@@ -258,11 +292,11 @@ function switchView(view, opts) {
   currentView = view;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
   document.getElementById('sidebar').classList.remove('open');
-  const titles = { campaigns: 'Campaigns', agent: 'AI Agent Chat', calendar: 'Content Calendar', content: 'Content Library', marketplace: 'Marketplace', analytics: 'Analytics', settings: 'Settings', campaignDetail: 'Campaign Detail' };
+  const titles = { campaigns: 'Campaigns', board: 'Post Board', agent: 'AI Agent Chat', calendar: 'Content Calendar', content: 'Content Library', marketplace: 'Marketplace', analytics: 'Analytics', settings: 'Settings', campaignDetail: 'Campaign Detail' };
   document.getElementById('viewTitle').textContent = titles[view] || 'Console';
   document.getElementById('topbarActions').innerHTML = '';
 
-  const r = { campaigns: renderCampaigns, agent: renderAgent, calendar: renderCalendar, content: renderContent, marketplace: renderMarketplace, analytics: renderAnalytics, settings: renderSettings, campaignDetail: renderCampaignDetail };
+  const r = { dashboard: renderDashboard, contentSources: renderContentSources, compose: renderCompose, postHistory: renderPostHistory, postCalendar: renderPostCalendar, connections: renderConnections, brandVoice: renderBrandVoice, campaigns: renderCampaigns, board: renderPostBoard, agent: renderAgent, calendar: renderCalendar, content: renderContent, marketplace: renderMarketplace, analytics: renderAnalytics, settings: renderSettings, campaignDetail: renderCampaignDetail };
   if (r[view]) r[view](opts);
 }
 
@@ -365,6 +399,7 @@ function renderCampaignDetail(opts) {
     </div>
     <div style="display:flex;gap:.5rem;margin-bottom:.8rem">
       <button class="btn btn-primary" onclick="switchView('agent')">Chat with Agent about this campaign</button>
+      <button class="btn btn-secondary" onclick="boardCampaignFilter='${camp.id}';switchView('board')">Open Post Board</button>
     </div>
     <h3 style="font-size:.88rem;font-weight:700;margin-bottom:.5rem">Scheduled Posts (${posts.length})</h3>
     ${posts.length ? posts.map(p => `<div class="card content-item"><span class="cal-dot" data-platform="${p.platform}" style="width:auto;padding:.15rem .5rem;flex-shrink:0">${p.platform}</span><div class="content-body"><p>${esc(p.text)}</p><div class="content-meta">${new Date(p.date).toLocaleDateString()}</div></div></div>`).join('') : '<p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">No posts scheduled yet.</p>'}
@@ -383,6 +418,217 @@ function deleteCampaign(id) {
   if (!confirm('Delete this campaign?')) return;
   saveCampaigns(getCampaigns().filter(c => c.id !== id));
   switchView('campaigns');
+}
+
+/* ── Post Task Board ── */
+const boardColumns = [
+  { id: 'draft', label: 'Draft', color: '#6b7280' },
+  { id: 'needs_approval', label: 'Needs Approval', color: '#f59e0b' },
+  { id: 'approved', label: 'Approved', color: '#0ea5e9' },
+  { id: 'scheduled', label: 'Scheduled', color: '#8b5cf6' },
+  { id: 'published', label: 'Published', color: '#16a34a' },
+  { id: 'failed', label: 'Blocked', color: '#ef4444' }
+];
+let boardCampaignFilter = 'all';
+let boardDragKey = null;
+
+function normalizeBoardStatus(status) {
+  const s = String(status || 'Draft').toLowerCase().replace(/[\s-]+/g, '_');
+  if (['pending', 'needs_approval', 'review'].includes(s)) return 'needs_approval';
+  if (['approved', 'ready'].includes(s)) return 'approved';
+  if (['scheduled', 'queued'].includes(s)) return 'scheduled';
+  if (['publishing', 'running'].includes(s)) return 'scheduled';
+  if (['published', 'posted', 'complete', 'completed'].includes(s)) return 'published';
+  if (['failed', 'blocked', 'cancelled', 'canceled'].includes(s)) return 'failed';
+  return 'draft';
+}
+
+function boardStatusLabel(status) {
+  const col = boardColumns.find(c => c.id === normalizeBoardStatus(status));
+  return col ? col.label : 'Draft';
+}
+
+function boardPlatformColor(platform) {
+  const key = String(platform || '').toLowerCase();
+  return { x: '#1d9bf0', twitter: '#1d9bf0', instagram: '#e1306c', linkedin: '#0a66c2', email: '#16a34a', tiktok: '#111827', facebook: '#1877f2', social: '#6b7280' }[key] || '#6b7280';
+}
+
+function getPostTasks() {
+  const campaigns = getCampaigns();
+  const campaignName = id => campaigns.find(c => c.id === id)?.name || 'No campaign';
+  const scheduled = getCalendarPosts().map(p => ({
+    key: 'calendar:' + p.id,
+    source: 'calendar',
+    id: p.id,
+    campaignId: p.campaignId || null,
+    campaign: campaignName(p.campaignId),
+    platform: p.platform || 'social',
+    text: p.text || '',
+    date: p.date || null,
+    status: normalizeBoardStatus(p.status || 'Scheduled')
+  }));
+  const drafts = getContent()
+    .filter(c => c.type === 'Social Post')
+    .map(c => ({
+      key: 'content:' + c.id,
+      source: 'content',
+      id: c.id,
+      campaignId: c.campaignId || null,
+      campaign: c.campaign || campaignName(c.campaignId),
+      platform: c.platform || 'social',
+      text: c.text || '',
+      date: null,
+      status: normalizeBoardStatus(c.status || 'Draft')
+    }));
+  return scheduled.concat(drafts);
+}
+
+function renderPostBoard() {
+  const el = document.getElementById('viewContent');
+  const tb = document.getElementById('topbarActions');
+  tb.innerHTML = '<button class="btn btn-primary" onclick="openAddPostModal()">+ Add Post</button>';
+  const campaigns = getCampaigns();
+  const allTasks = getPostTasks();
+  const tasks = boardCampaignFilter === 'all' ? allTasks : allTasks.filter(t => t.campaignId === boardCampaignFilter);
+  const scheduledCount = tasks.filter(t => t.status === 'scheduled').length;
+  const approvalCount = tasks.filter(t => t.status === 'needs_approval').length;
+
+  el.innerHTML = `
+    <div class="board-toolbar">
+      <div class="board-summary">${tasks.length} post tasks &middot; ${approvalCount} need approval &middot; ${scheduledCount} scheduled</div>
+      <div class="board-actions">
+        <select onchange="boardCampaignFilter=this.value;renderPostBoard()">
+          <option value="all">All campaigns</option>
+          ${campaigns.map(c => `<option value="${c.id}" ${boardCampaignFilter === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}
+        </select>
+        <button class="btn btn-secondary" onclick="seedBoardFromContent()">Create tasks from social drafts</button>
+      </div>
+    </div>
+    <div class="kanban-board">
+      ${boardColumns.map(col => {
+        const colTasks = tasks.filter(t => t.status === col.id);
+        return `
+          <section class="kanban-column" data-status="${col.id}" ondragover="event.preventDefault();this.classList.add('board-drop-active')" ondragleave="this.classList.remove('board-drop-active')" ondrop="dropBoardTask(event,'${col.id}',this)">
+            <div class="kanban-header">
+              <div class="kanban-title"><span class="kanban-dot" style="background:${col.color}"></span>${col.label}</div>
+              <span class="kanban-count">${colTasks.length}</span>
+            </div>
+            <div class="kanban-items">
+              ${colTasks.length ? colTasks.map(renderBoardCard).join('') : '<div class="kanban-empty">No post tasks here.</div>'}
+            </div>
+          </section>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderBoardCard(task) {
+  const date = task.date ? new Date(task.date + 'T12:00:00').toLocaleDateString() : 'Unscheduled';
+  const next = boardNextActions(task.status, task.key);
+  return `
+    <article class="kanban-card" draggable="true" ondragstart="dragBoardTask(event,'${task.key}')" ondragend="this.classList.remove('dragging')" onclick="openBoardTask('${task.key}')">
+      <div class="kanban-card-title">${esc(task.text || 'Untitled post')}</div>
+      <div class="kanban-card-meta">
+        <span class="kanban-pill kanban-platform" style="background:${boardPlatformColor(task.platform)}">${esc(task.platform)}</span>
+        <span class="kanban-pill">${esc(task.campaign)}</span>
+        <span class="kanban-pill">${date}</span>
+      </div>
+      <div class="kanban-card-actions" onclick="event.stopPropagation()">${next}</div>
+    </article>
+  `;
+}
+
+function boardNextActions(status, key) {
+  if (status === 'draft') return `<button onclick="updateBoardTaskStatus('${key}','needs_approval')">Review</button><button onclick="updateBoardTaskStatus('${key}','scheduled')">Schedule</button>`;
+  if (status === 'needs_approval') return `<button onclick="updateBoardTaskStatus('${key}','approved')">Approve</button><button onclick="updateBoardTaskStatus('${key}','failed')">Block</button>`;
+  if (status === 'approved') return `<button onclick="updateBoardTaskStatus('${key}','scheduled')">Schedule</button>`;
+  if (status === 'scheduled') return `<button onclick="updateBoardTaskStatus('${key}','published')">Published</button><button onclick="updateBoardTaskStatus('${key}','failed')">Failed</button>`;
+  if (status === 'failed') return `<button onclick="updateBoardTaskStatus('${key}','draft')">Reopen</button>`;
+  return '<button onclick="copyBoardTask(this)">Copy</button>';
+}
+
+function dragBoardTask(e, key) {
+  boardDragKey = key;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function dropBoardTask(e, status, column) {
+  e.preventDefault();
+  column.classList.remove('board-drop-active');
+  if (!boardDragKey) return;
+  updateBoardTaskStatus(boardDragKey, status);
+  boardDragKey = null;
+}
+
+function updateBoardTaskStatus(key, status) {
+  const [source, id] = key.split(':');
+  if (source === 'calendar') {
+    const posts = getCalendarPosts();
+    const post = posts.find(p => p.id === id);
+    if (post) {
+      post.status = boardStatusLabel(status);
+      saveCalendarPosts(posts);
+    }
+  } else if (source === 'content') {
+    const content = getContent();
+    const item = content.find(c => c.id === id);
+    if (item) {
+      item.status = boardStatusLabel(status);
+      saveContent(content);
+    }
+  }
+  renderPostBoard();
+}
+
+function openBoardTask(key) {
+  const task = getPostTasks().find(t => t.key === key);
+  if (!task) return;
+  openModal(`
+    <h3>Post Task</h3>
+    <div class="form-group"><label>Platform</label><input value="${esc(task.platform)}" disabled></div>
+    <div class="form-group"><label>Campaign</label><input value="${esc(task.campaign)}" disabled></div>
+    <div class="form-group"><label>Status</label>
+      <select id="boardTaskStatus">
+        ${boardColumns.map(c => `<option value="${c.id}" ${c.id === task.status ? 'selected' : ''}>${c.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>Post Copy</label><textarea id="boardTaskText" rows="5">${esc(task.text)}</textarea></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBoardTask('${key}')">Save</button>
+    </div>
+  `);
+}
+
+function saveBoardTask(key) {
+  const [source, id] = key.split(':');
+  const text = document.getElementById('boardTaskText').value.trim();
+  const status = boardStatusLabel(document.getElementById('boardTaskStatus').value);
+  if (source === 'calendar') {
+    const posts = getCalendarPosts();
+    const post = posts.find(p => p.id === id);
+    if (post) { post.text = text; post.status = status; saveCalendarPosts(posts); }
+  } else {
+    const content = getContent();
+    const item = content.find(c => c.id === id);
+    if (item) { item.text = text; item.status = status; saveContent(content); }
+  }
+  closeModal();
+  renderPostBoard();
+}
+
+function copyBoardTask(button) {
+  const card = button.closest('.kanban-card');
+  const text = card?.querySelector('.kanban-card-title')?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+function seedBoardFromContent() {
+  const content = getContent().filter(c => c.type === 'Social Post');
+  if (!content.length) return showToast('No social drafts to convert');
+  showToast('Social drafts are already shown as board tasks');
 }
 
 /* ── AI Agent Chat ── */
@@ -1057,9 +1303,778 @@ window.switchView = function(view, opts) {
   origSwitch(view, opts);
 };
 
+/* ── API Client ── */
+const API_BASE = location.hostname === 'localhost' ? 'http://localhost:8787' : 'https://promarketingstore-backend.serge-the-dev.workers.dev';
+function getToken() { return localStorage.getItem('pms_token'); }
+function setToken(t) { if (t) localStorage.setItem('pms_token', t); else localStorage.removeItem('pms_token'); }
+function getUser() { return LS('user'); }
+function setUser(u) { SS('user', u); }
+
+async function api(path, opts = {}) {
+  const token = getToken();
+  const headers = { ...opts.headers };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData) && !(opts.body instanceof ArrayBuffer)) {
+    headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(opts.body);
+  }
+  const res = await fetch(API_BASE + '/v1' + path, { ...opts, headers });
+  if (res.status === 401) { setToken(null); setUser(null); renderAuthBar(); }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'API error ' + res.status);
+  return data;
+}
+
+function renderAuthBar() {
+  const footer = document.querySelector('.sidebar-footer');
+  const user = getUser();
+  if (user) {
+    footer.innerHTML = `<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem"><div style="width:28px;height:28px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;flex-shrink:0">${esc((user.name || user.email || '?')[0].toUpperCase())}</div><div><div style="font-size:.78rem;font-weight:600">${esc(user.name || 'User')}</div><div style="font-size:.65rem;color:var(--muted)">${esc(user.email)}</div></div></div><button class="btn btn-secondary" style="width:100%;font-size:.72rem" onclick="signOut()">Sign Out</button>`;
+  } else {
+    footer.innerHTML = `<button class="btn btn-primary" style="width:100%;font-size:.78rem" onclick="signIn()">Sign In with Google</button>`;
+  }
+}
+
+async function signIn() {
+  const GOOGLE_CLIENT_ID = ''; // Set via settings or env
+  if (!GOOGLE_CLIENT_ID) { showToast('Google Client ID not configured — set in Settings'); switchView('settings'); return; }
+  // In a real implementation, use Google Identity Services or redirect flow
+  showToast('Google sign-in flow — configure GOOGLE_CLIENT_ID');
+}
+
+function signOut() {
+  setToken(null);
+  setUser(null);
+  renderAuthBar();
+  showToast('Signed out');
+}
+
+/* ── Connections View ── */
+async function renderConnections() {
+  const el = document.getElementById('viewContent');
+  document.getElementById('viewTitle').textContent = 'Connected Accounts';
+  const tb = document.getElementById('topbarActions');
+  tb.innerHTML = '';
+
+  if (!getToken()) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">&#128274;</div><p>Sign in to connect your social accounts.</p></div>';
+    return;
+  }
+
+  el.innerHTML = '<p style="color:var(--muted);font-size:.84rem">Loading accounts...</p>';
+  try {
+    const [accountsData, providersData] = await Promise.all([api('/social/accounts'), api('/social/providers')]);
+    const accounts = accountsData.accounts || [];
+    const providers = providersData.providers || [];
+
+    let html = '<div style="margin-bottom:1.2rem"><h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Connect a Platform</h3><div style="display:flex;gap:.5rem;flex-wrap:wrap">';
+    for (const p of providers) {
+      if (p.status === 'oauth-ready' || p.status === 'account-discovery-ready') {
+        html += `<button class="btn btn-secondary" onclick="connectProvider('${p.id}')" style="text-transform:capitalize">${esc(p.name)}</button>`;
+      }
+    }
+    html += '</div></div>';
+
+    if (accounts.length) {
+      html += '<h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Connected Accounts</h3>';
+      html += accounts.map(a => `
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:.85rem;font-weight:600">${esc(a.displayName)}</div>
+            <div style="font-size:.72rem;color:var(--muted);text-transform:capitalize">${a.provider} &middot; <span class="status-badge status-${a.status === 'connected' ? 'active' : 'draft'}">${a.status}</span></div>
+          </div>
+          <button class="btn btn-ghost" style="color:#ef4444;font-size:.75rem" onclick="disconnectAccount('${a.id}')">Disconnect</button>
+        </div>
+      `).join('');
+    } else {
+      html += '<p style="font-size:.82rem;color:var(--muted)">No accounts connected yet. Click a platform above to get started.</p>';
+    }
+    el.innerHTML = html;
+  } catch (err) {
+    el.innerHTML = `<div class="card" style="color:#ef4444">${esc(err.message)}</div>`;
+  }
+}
+
+async function connectProvider(provider) {
+  try {
+    const endpoint = provider === 'x' ? '/social/x/oauth/start' : '/social/meta/oauth/start';
+    const data = await api(endpoint, { method: 'POST', body: { returnTo: location.href } });
+    if (data.authUrl) window.location.href = data.authUrl;
+    else showToast('No auth URL returned');
+  } catch (err) {
+    showToast('Connection failed: ' + err.message);
+  }
+}
+
+async function disconnectAccount(id) {
+  if (!confirm('Disconnect this account?')) return;
+  try {
+    await api('/social/accounts/' + id, { method: 'DELETE' });
+    showToast('Account disconnected');
+    renderConnections();
+  } catch (err) {
+    showToast('Failed: ' + err.message);
+  }
+}
+
+/* ── Compose View ── */
+async function renderCompose() {
+  const el = document.getElementById('viewContent');
+  document.getElementById('viewTitle').textContent = 'Compose Post';
+  document.getElementById('topbarActions').innerHTML = '';
+
+  if (!getToken()) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">&#9998;</div><p>Sign in to compose and schedule posts.</p></div>';
+    return;
+  }
+
+  let accounts = [];
+  try {
+    const data = await api('/social/accounts');
+    accounts = data.accounts || [];
+  } catch { /* ignore */ }
+
+  const accountOpts = accounts.length
+    ? accounts.map(a => `<option value="${a.id}">${esc(a.displayName)} (${a.provider})</option>`).join('')
+    : '<option value="">No accounts connected</option>';
+  const platformOpts = ['facebook', 'instagram', 'x'].map(p => `<option value="${p}" style="text-transform:capitalize">${p}</option>`).join('');
+
+  el.innerHTML = `
+    <div class="card" style="max-width:640px">
+      <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">New Post</h3>
+      <div class="form-group"><label>Platform</label><select id="compPlatform">${platformOpts}</select></div>
+      <div class="form-group"><label>Social Account</label><select id="compAccount"><option value="">Select account...</option>${accountOpts}</select></div>
+      <div class="form-group"><label>Content</label><textarea id="compContent" rows="4" placeholder="What do you want to post?"></textarea></div>
+      <div class="form-group"><label>Schedule (optional)</label><input type="datetime-local" id="compSchedule"></div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="composePost('draft')">Save Draft</button>
+        <button class="btn btn-primary" onclick="composePost('schedule')">Schedule</button>
+      </div>
+      <div id="compStatus" style="margin-top:.6rem;font-size:.8rem"></div>
+    </div>
+  `;
+}
+
+async function composePost(action) {
+  const platform = document.getElementById('compPlatform').value;
+  const socialAccountId = document.getElementById('compAccount').value || undefined;
+  const content = document.getElementById('compContent').value.trim();
+  const scheduleEl = document.getElementById('compSchedule');
+  const scheduledFor = scheduleEl.value ? new Date(scheduleEl.value).toISOString() : undefined;
+  const status = document.getElementById('compStatus');
+
+  if (!content) { status.textContent = 'Content is required.'; return; }
+  if (action === 'schedule' && !scheduledFor) { status.textContent = 'Select a date/time to schedule.'; return; }
+
+  status.textContent = 'Creating...';
+  status.style.color = 'var(--muted)';
+  try {
+    const data = await api('/posts', { method: 'POST', body: { platform, content, socialAccountId, scheduledFor } });
+    status.style.color = '#16a34a';
+    status.textContent = action === 'schedule' ? 'Post scheduled!' : 'Draft saved!';
+    document.getElementById('compContent').value = '';
+    scheduleEl.value = '';
+    showToast(action === 'schedule' ? 'Post scheduled' : 'Draft saved');
+  } catch (err) {
+    status.style.color = '#ef4444';
+    status.textContent = err.message;
+  }
+}
+
+/* ── Post History View ── */
+async function renderPostHistory() {
+  const el = document.getElementById('viewContent');
+  document.getElementById('viewTitle').textContent = 'Post History';
+  document.getElementById('topbarActions').innerHTML = '<button class="btn btn-primary" onclick="batchScheduleDrafts()">Schedule All Drafts</button>';
+
+  if (!getToken()) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">&#128203;</div><p>Sign in to see your post history.</p></div>';
+    return;
+  }
+
+  el.innerHTML = '<p style="color:var(--muted);font-size:.84rem">Loading posts...</p>';
+  try {
+    const data = await api('/posts');
+    const posts = data.posts || [];
+    if (!posts.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#128203;</div><p>No posts yet. Compose your first post!</p><button class="btn btn-primary" onclick="switchView(\'compose\')">Compose</button></div>';
+      return;
+    }
+
+    el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.82rem">
+      <thead><tr style="text-align:left;border-bottom:2px solid var(--line)">
+        <th style="padding:.5rem .6rem;font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted)">Platform</th>
+        <th style="padding:.5rem .6rem;font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted)">Content</th>
+        <th style="padding:.5rem .6rem;font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted)">Status</th>
+        <th style="padding:.5rem .6rem;font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted)">Scheduled</th>
+        <th style="padding:.5rem .6rem;font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted)">Actions</th>
+      </tr></thead>
+      <tbody>
+        ${posts.map(p => `<tr style="border-bottom:1px solid var(--line)">
+          <td style="padding:.5rem .6rem;text-transform:capitalize;font-weight:600">${esc(p.platform)}</td>
+          <td style="padding:.5rem .6rem;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.content)}</td>
+          <td style="padding:.5rem .6rem"><span class="status-badge status-${p.status === 'posted' ? 'posted' : p.status === 'scheduled' ? 'scheduled' : p.status === 'failed' ? 'draft' : 'draft'}">${p.status}</span>${p.error ? `<div style="font-size:.68rem;color:#ef4444;margin-top:.2rem">${esc(p.error)}</div>` : ''}</td>
+          <td style="padding:.5rem .6rem;font-size:.78rem;color:var(--muted)">${p.scheduledFor ? new Date(p.scheduledFor).toLocaleString() : '—'}</td>
+          <td style="padding:.5rem .6rem">
+            ${p.status === 'draft' || p.status === 'scheduled' ? `<button class="btn btn-ghost" style="font-size:.72rem;color:#ef4444" onclick="deletePost('${p.id}')">Delete</button>` : ''}
+            ${p.status === 'draft' && p.socialAccountId ? `<button class="btn btn-ghost" style="font-size:.72rem;color:var(--accent)" onclick="publishNow('${p.id}')">Publish Now</button>` : ''}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+  } catch (err) {
+    el.innerHTML = `<div class="card" style="color:#ef4444">${esc(err.message)}</div>`;
+  }
+}
+
+async function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  try {
+    await api('/posts/' + id, { method: 'DELETE' });
+    showToast('Post deleted');
+    renderPostHistory();
+  } catch (err) { showToast('Failed: ' + err.message); }
+}
+
+async function publishNow(id) {
+  if (!confirm('Publish this post now?')) return;
+  try {
+    await api('/posts/' + id + '/publish', { method: 'POST' });
+    showToast('Post published!');
+    renderPostHistory();
+  } catch (err) { showToast('Failed: ' + err.message); }
+}
+
+/* ── Content Sources View ── */
+async function renderContentSources() {
+  const el = document.getElementById('viewContent');
+  document.getElementById('viewTitle').textContent = 'Content Sources';
+  document.getElementById('topbarActions').innerHTML = '<button class="btn btn-primary" onclick="openAddSourceModal()">+ Add Source</button>';
+
+  if (!getToken()) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">&#128225;</div><p>Sign in to manage content sources.</p></div>';
+    return;
+  }
+
+  el.innerHTML = '<p style="color:var(--muted);font-size:.84rem">Loading sources...</p>';
+  try {
+    const data = await api('/sources');
+    const sources = data.sources || [];
+
+    if (!sources.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">&#128225;</div>
+        <p style="margin-bottom:.5rem">Add your website, blog RSS, or Slack channel as a content source.</p>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem">PMS scans your sources and generates social media posts from your content.</p>
+        <button class="btn btn-primary" onclick="openAddSourceModal()">Add First Source</button>
+      </div>`;
+      return;
+    }
+
+    el.innerHTML = sources.map(s => `
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+            <span style="font-size:.65rem;padding:.15rem .4rem;border-radius:4px;background:#f3f4f6;font-weight:700;text-transform:uppercase">${esc(s.type)}</span>
+            <span style="font-size:.88rem;font-weight:600">${esc(s.name)}</span>
+          </div>
+          <div style="font-size:.72rem;color:var(--muted)">${s.config.url ? esc(s.config.url) : s.type === 'slack' ? 'Slack channel' : 'Teams channel'} &middot; Scans ${s.scanFrequency} &middot; ${s.lastScannedAt ? 'Last: ' + new Date(s.lastScannedAt).toLocaleString() : 'Never scanned'}</div>
+        </div>
+        <div style="display:flex;gap:.3rem;flex-shrink:0">
+          <button class="btn btn-secondary" style="font-size:.72rem" onclick="scanSource('${s.id}')">Scan Now</button>
+          <button class="btn btn-secondary" style="font-size:.72rem" onclick="generateFromSource('${s.id}')">Generate Posts</button>
+          <button class="btn btn-ghost" style="font-size:.72rem;color:#ef4444" onclick="deleteSource('${s.id}')">Remove</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    el.innerHTML = `<div class="card" style="color:#ef4444">${esc(err.message)}</div>`;
+  }
+}
+
+function openAddSourceModal() {
+  openModal(`
+    <h3>Add Content Source</h3>
+    <div class="form-group"><label>Type</label>
+      <select id="srcType" onchange="updateSourceForm()">
+        <option value="website">Website / Blog</option>
+        <option value="rss">RSS Feed</option>
+        <option value="slack">Slack Channel</option>
+        <option value="teams">Teams Channel</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Name</label><input id="srcName" placeholder="My Company Blog"></div>
+    <div id="srcConfigFields">
+      <div class="form-group"><label>URL</label><input id="srcUrl" placeholder="https://example.com"></div>
+    </div>
+    <div class="form-group"><label>Scan Frequency</label>
+      <select id="srcFreq">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="manual">Manual only</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="addSource()">Add Source</button>
+    </div>
+  `);
+}
+
+function updateSourceForm() {
+  const type = document.getElementById('srcType').value;
+  const fields = document.getElementById('srcConfigFields');
+  if (type === 'website' || type === 'rss') {
+    fields.innerHTML = '<div class="form-group"><label>URL</label><input id="srcUrl" placeholder="https://example.com/blog"></div>';
+  } else if (type === 'slack') {
+    fields.innerHTML = '<div class="form-group"><label>Channel Name</label><input id="srcChannel" placeholder="#announcements"></div><p style="font-size:.72rem;color:var(--muted);margin-top:.3rem">After adding, configure a Slack webhook to POST to the URL shown.</p>';
+  } else {
+    fields.innerHTML = '<div class="form-group"><label>Channel Name</label><input id="srcChannel" placeholder="General"></div><p style="font-size:.72rem;color:var(--muted);margin-top:.3rem">After adding, set up a Power Automate flow to POST to the webhook URL.</p>';
+  }
+}
+
+async function addSource() {
+  const type = document.getElementById('srcType').value;
+  const name = document.getElementById('srcName').value.trim();
+  if (!name) { showToast('Name is required'); return; }
+
+  const config = {};
+  if (type === 'website' || type === 'rss') {
+    const url = document.getElementById('srcUrl').value.trim();
+    if (!url) { showToast('URL is required'); return; }
+    config.url = url;
+  } else {
+    const ch = document.getElementById('srcChannel');
+    if (ch) config.channel = ch.value.trim();
+  }
+
+  try {
+    const data = await api('/sources', { method: 'POST', body: { type, name, config, scanFrequency: document.getElementById('srcFreq').value } });
+    closeModal();
+    showToast('Source added!');
+
+    // Show webhook URL for Slack/Teams
+    if ((type === 'slack' || type === 'teams') && data.source) {
+      const webhookUrl = API_BASE + '/v1/webhooks/' + type + '/' + data.source.id;
+      openModal(`<h3>Webhook URL</h3><p style="font-size:.82rem;margin-bottom:.5rem">Configure your ${type === 'slack' ? 'Slack' : 'Teams'} to send messages to:</p><input value="${webhookUrl}" style="width:100%;padding:.5rem;font-size:.78rem;border:1px solid var(--line);border-radius:6px;background:var(--bg)" readonly onclick="this.select()"><div class="form-actions" style="margin-top:.8rem"><button class="btn btn-primary" onclick="closeModal();renderContentSources()">Done</button></div>`);
+    } else {
+      renderContentSources();
+    }
+  } catch (err) { showToast('Failed: ' + err.message); }
+}
+
+async function scanSource(id) {
+  showToast('Scanning...');
+  try {
+    const data = await api('/sources/' + id + '/scan', { method: 'POST' });
+    showToast(`Scanned: ${data.extracted} new items, ${data.skipped} skipped`);
+    renderContentSources();
+  } catch (err) { showToast('Scan failed: ' + err.message); }
+}
+
+async function generateFromSource(id) {
+  openModal(`
+    <h3>Generate Social Posts</h3>
+    <div class="form-group"><label>Platforms</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="x" checked> X</label>
+        <label><input type="checkbox" value="facebook" checked> Facebook</label>
+        <label><input type="checkbox" value="instagram"> Instagram</label>
+      </div>
+    </div>
+    <div class="form-group"><label>Number of Posts</label><input type="number" id="genCount" value="5" min="1" max="20"></div>
+    <div class="form-group"><label>Tone</label>
+      <select id="genTone">
+        <option value="professional">Professional</option>
+        <option value="casual">Casual</option>
+        <option value="enthusiastic">Enthusiastic</option>
+        <option value="informative">Informative</option>
+      </select>
+    </div>
+    <div id="genStatus" style="margin-top:.5rem;font-size:.8rem"></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="doGenerate('${id}')">Generate</button>
+    </div>
+  `);
+}
+
+async function doGenerate(sourceId) {
+  const platforms = [...document.querySelectorAll('.checkbox-group input:checked')].map(c => c.value);
+  const count = parseInt(document.getElementById('genCount').value, 10) || 5;
+  const tone = document.getElementById('genTone').value;
+  const status = document.getElementById('genStatus');
+  if (!platforms.length) { status.textContent = 'Select at least one platform'; return; }
+
+  status.textContent = 'Generating posts with AI...';
+  status.style.color = 'var(--muted)';
+  try {
+    const data = await api('/sources/' + sourceId + '/generate', { method: 'POST', body: { platforms, count, tone } });
+    status.style.color = '#16a34a';
+    status.textContent = `Generated ${data.generated} draft posts!`;
+    showToast(`${data.generated} posts generated — check Post History`);
+    setTimeout(() => { closeModal(); switchView('postHistory'); }, 1500);
+  } catch (err) {
+    status.style.color = '#ef4444';
+    status.textContent = err.message;
+  }
+}
+
+async function deleteSource(id) {
+  if (!confirm('Remove this source? Extracted content will be deleted.')) return;
+  try {
+    await api('/sources/' + id, { method: 'DELETE' });
+    showToast('Source removed');
+    renderContentSources();
+  } catch (err) { showToast('Failed: ' + err.message); }
+}
+
+/* ── Brand Voice View ── */
+async function renderBrandVoice() {
+  const el = document.getElementById('viewContent');
+  document.getElementById('viewTitle').textContent = 'Brand Voice';
+  document.getElementById('topbarActions').innerHTML = '';
+
+  if (!getToken()) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">&#127908;</div><p>Sign in to set up your brand voice.</p></div>';
+    return;
+  }
+
+  el.innerHTML = '<p style="color:var(--muted);font-size:.84rem">Loading...</p>';
+  try {
+    const data = await api('/brand');
+    const brand = data.brand || {};
+    const voice = brand.voice || {};
+    const audience = brand.audience || {};
+    const rules = brand.approvalRules || {};
+
+    el.innerHTML = `
+      <div style="max-width:640px">
+        <div class="card" style="margin-bottom:.8rem">
+          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Brand Identity</h3>
+          <div class="form-group"><label>Brand Name</label><input id="bvName" value="${esc(brand.name || '')}" placeholder="Your company name"></div>
+          <div class="form-group"><label>Tone of Voice</label>
+            <select id="bvTone">
+              ${['professional', 'casual', 'enthusiastic', 'informative', 'witty', 'authoritative'].map(t => `<option value="${t}" ${voice.tone === t ? 'selected' : ''}>${t}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group"><label>Writing Style</label><input id="bvStyle" value="${esc(voice.style || '')}" placeholder="e.g. concise, storytelling, data-driven"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:.8rem">
+          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Target Audience</h3>
+          <div class="form-group"><label>Description</label><textarea id="bvAudience" rows="2" placeholder="e.g. SaaS founders, 25-45, US/EU, technical">${esc(audience.description || '')}</textarea></div>
+        </div>
+
+        <div class="card" style="margin-bottom:.8rem">
+          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Example Posts</h3>
+          <div class="form-group"><label>Paste 2-3 posts that match your desired voice</label><textarea id="bvExamples" rows="4" placeholder="One post per line...">${(voice.examples || []).join('\\n')}</textarea></div>
+        </div>
+
+        <div class="card" style="margin-bottom:.8rem">
+          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Guardrails</h3>
+          <div class="form-group"><label>Topics / Terms to Avoid (comma separated)</label><input id="bvBlocked" value="${(brand.blockedTerms || []).join(', ')}" placeholder="e.g. politics, competitors, profanity"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:.8rem">
+          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Automation</h3>
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;text-transform:none;letter-spacing:0">
+              <input type="checkbox" id="bvAutoApprove" ${rules.autoApprove ? 'checked' : ''} style="accent-color:var(--accent)">
+              Auto-approve AI-generated posts (skip manual review)
+            </label>
+          </div>
+          <div class="form-group"><label>Posts per Day (for auto-schedule)</label><input type="number" id="bvPostsPerDay" value="${rules.postsPerDay || 3}" min="1" max="10"></div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveBrandVoice()">Save Brand Voice</button>
+        <span id="bvStatus" style="margin-left:.5rem;font-size:.8rem"></span>
+      </div>
+    `;
+  } catch (err) {
+    el.innerHTML = `<div class="card" style="color:#ef4444">${esc(err.message)}</div>`;
+  }
+}
+
+async function saveBrandVoice() {
+  const status = document.getElementById('bvStatus');
+  status.textContent = 'Saving...';
+  status.style.color = 'var(--muted)';
+  try {
+    await api('/brand', { method: 'PATCH', body: {
+      name: document.getElementById('bvName').value.trim(),
+      voice: {
+        tone: document.getElementById('bvTone').value,
+        style: document.getElementById('bvStyle').value.trim(),
+        examples: document.getElementById('bvExamples').value.split('\n').filter(l => l.trim()),
+      },
+      audience: { description: document.getElementById('bvAudience').value.trim() },
+      blockedTerms: document.getElementById('bvBlocked').value.split(',').map(t => t.trim()).filter(Boolean),
+      approvalRules: {
+        autoApprove: document.getElementById('bvAutoApprove').checked,
+        postsPerDay: parseInt(document.getElementById('bvPostsPerDay').value, 10) || 3,
+      },
+    }});
+    status.style.color = '#16a34a';
+    status.textContent = 'Saved!';
+    showToast('Brand voice updated');
+  } catch (err) {
+    status.style.color = '#ef4444';
+    status.textContent = err.message;
+  }
+}
+
+/* ── Dashboard View ── */
+async function renderDashboard() {
+  const el = document.getElementById('viewContent');
+  document.getElementById('viewTitle').textContent = 'Dashboard';
+  document.getElementById('topbarActions').innerHTML = '';
+
+  if (!getToken()) {
+    // Unauthenticated: show the hero onboarding
+    el.innerHTML = `
+      <div style="text-align:center;padding:2rem 1rem">
+        <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:.5rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Turn your content into social posts</h1>
+        <p style="font-size:.9rem;color:var(--muted);margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto">Paste your website URL. AI reads your content and generates ready-to-post social media updates for X, Facebook, and Instagram.</p>
+        <div style="max-width:480px;margin:0 auto">
+          <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
+            <input id="heroUrl" placeholder="https://your-website.com" style="flex:1;padding:.6rem .8rem;border:1px solid var(--line);border-radius:8px;font-size:.88rem;outline:none" onkeydown="if(event.key==='Enter')heroOnboard()">
+            <button class="btn btn-primary" style="padding:.6rem 1.2rem;font-size:.88rem" onclick="heroOnboard()">Generate Posts</button>
+          </div>
+          <p style="font-size:.72rem;color:var(--muted)">Sign in first, then paste your URL. Uses your own OpenAI or Anthropic key.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  el.innerHTML = '<p style="color:var(--muted);font-size:.84rem">Loading...</p>';
+  try {
+    const data = await api('/dashboard');
+
+    // Quick-start bar (always visible)
+    let html = `
+      <div class="card" style="margin-bottom:1rem;padding:1rem">
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <input id="quickUrl" placeholder="Paste a URL to generate social posts..." style="flex:1;padding:.5rem .7rem;border:1px solid var(--line);border-radius:7px;font-size:.84rem;outline:none" onkeydown="if(event.key==='Enter')quickOnboard()">
+          <button class="btn btn-primary" onclick="quickOnboard()">Generate</button>
+        </div>
+        <div id="quickStatus" style="margin-top:.4rem;font-size:.78rem"></div>
+      </div>
+    `;
+
+    // Stats
+    html += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.2rem">
+      <div class="card" style="text-align:center"><div style="font-size:1.8rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${data.connectedAccounts}</div><div style="font-size:.75rem;color:var(--muted);font-weight:600;margin-top:.2rem">Connected Accounts</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:1.8rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${data.totalPosts}</div><div style="font-size:.75rem;color:var(--muted);font-weight:600;margin-top:.2rem">Total Posts</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:1.8rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${data.scheduledPosts}</div><div style="font-size:.75rem;color:var(--muted);font-weight:600;margin-top:.2rem">Scheduled</div></div>
+    </div>`;
+
+    // Setup checklist
+    if (data.connectedAccounts === 0 || data.totalPosts === 0) {
+      html += '<div class="card" style="margin-bottom:1rem"><h3 style="font-size:.88rem;font-weight:700;margin-bottom:.5rem">Quick Setup</h3>';
+      const steps = [
+        { done: true, text: 'Create account', action: '' },
+        { done: data.connectedAccounts > 0, text: 'Connect a social account', action: "switchView('connections')" },
+        { done: false, text: 'Add your AI key (OpenAI or Anthropic)', action: "switchView('settings')" },
+        { done: data.totalPosts > 0, text: 'Generate your first posts', action: "document.getElementById('quickUrl').focus()" },
+      ];
+      html += steps.map(s => `<div style="display:flex;align-items:center;gap:.5rem;padding:.3rem 0;font-size:.82rem${s.done ? ';color:var(--muted);text-decoration:line-through' : ''}"><span>${s.done ? '&#9989;' : '&#9744;'}</span><span style="flex:1">${s.text}</span>${!s.done && s.action ? `<button class="btn btn-secondary" style="font-size:.72rem" onclick="${s.action}">Do it</button>` : ''}</div>`).join('');
+      html += '</div>';
+    }
+
+    // Recent activity
+    html += '<h3 style="font-size:.9rem;font-weight:700;margin-bottom:.6rem">Recent Activity</h3>';
+    if (data.recentPosts.length) {
+      html += data.recentPosts.map(p => `
+        <div class="card" style="display:flex;align-items:center;gap:.8rem">
+          <span style="font-size:.68rem;padding:.15rem .5rem;border-radius:4px;background:#f3f4f6;font-weight:700;text-transform:capitalize;flex-shrink:0">${esc(p.platform)}</span>
+          <div style="flex:1;min-width:0"><div style="font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.content)}</div><div style="font-size:.68rem;color:var(--muted)">${p.postedAt ? 'Posted ' + new Date(p.postedAt).toLocaleString() : p.scheduledFor ? 'Scheduled ' + new Date(p.scheduledFor).toLocaleString() : 'Draft'}</div></div>
+          <span class="status-badge status-${p.status === 'posted' ? 'posted' : p.status === 'scheduled' ? 'scheduled' : 'draft'}">${p.status}</span>
+        </div>
+      `).join('');
+    } else {
+      html += '<p style="font-size:.82rem;color:var(--muted)">No posts yet. Paste a URL above to get started!</p>';
+    }
+    el.innerHTML = html;
+  } catch (err) {
+    el.innerHTML = `<div class="card" style="color:#ef4444">${esc(err.message)}</div>`;
+  }
+}
+
+async function heroOnboard() { showToast('Sign in first to generate posts'); }
+
+async function quickOnboard() {
+  const input = document.getElementById('quickUrl');
+  const status = document.getElementById('quickStatus');
+  const url = input.value.trim();
+  if (!url) { status.textContent = 'Paste a URL first'; return; }
+
+  status.textContent = 'Scanning your content and generating posts...';
+  status.style.color = 'var(--muted)';
+  try {
+    const data = await api('/onboard', { method: 'POST', body: { url, platforms: ['x', 'facebook'], count: 5 } });
+
+    if (data.error && !data.posts?.length) {
+      status.style.color = '#ef4444';
+      status.textContent = data.error + (data.hint ? ' ' + data.hint : '');
+      return;
+    }
+
+    if (data.posts?.length) {
+      status.style.color = '#16a34a';
+      status.textContent = `Generated ${data.generated} posts! Opening Post History...`;
+      showToast(`${data.generated} draft posts generated from ${url}`);
+      setTimeout(() => switchView('postHistory'), 1000);
+    } else {
+      status.style.color = '#f59e0b';
+      status.textContent = data.message || 'No content found. Try a blog or about page URL.';
+    }
+  } catch (err) {
+    status.style.color = '#ef4444';
+    status.textContent = err.message;
+  }
+}
+
+/* ── Post Calendar View ── */
+let pcMonth, pcYear;
+
+async function renderPostCalendar() {
+  const el = document.getElementById('viewContent');
+  document.getElementById('viewTitle').textContent = 'Content Calendar';
+  document.getElementById('topbarActions').innerHTML = '<button class="btn btn-primary" onclick="switchView(\'compose\')">+ New Post</button>';
+
+  if (!getToken()) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">&#128197;</div><p>Sign in to see your calendar.</p></div>';
+    return;
+  }
+
+  const now = new Date();
+  if (!pcMonth) { pcMonth = now.getMonth() + 1; pcYear = now.getFullYear(); }
+
+  const monthStr = `${pcYear}-${String(pcMonth).padStart(2, '0')}`;
+  el.innerHTML = '<p style="color:var(--muted);font-size:.84rem">Loading...</p>';
+
+  try {
+    const data = await api('/posts/calendar?month=' + monthStr);
+    const posts = data.posts || [];
+
+    // Group posts by day
+    const byDay = {};
+    for (const p of posts) {
+      const day = p.date ? new Date(p.date).getDate() : 1;
+      if (!byDay[day]) byDay[day] = [];
+      byDay[day].push(p);
+    }
+
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const firstDay = new Date(pcYear, pcMonth - 1, 1).getDay();
+    const daysInMonth = new Date(pcYear, pcMonth, 0).getDate();
+
+    let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+      <button class="btn btn-ghost" onclick="pcMonth--;if(pcMonth<1){pcMonth=12;pcYear--;}renderPostCalendar()">&larr;</button>
+      <h3 style="font-size:1rem;font-weight:700">${monthNames[pcMonth - 1]} ${pcYear}</h3>
+      <button class="btn btn-ghost" onclick="pcMonth++;if(pcMonth>12){pcMonth=1;pcYear++;}renderPostCalendar()">&rarr;</button>
+    </div>`;
+
+    html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-size:.72rem">';
+    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+      html += `<div style="text-align:center;font-weight:700;color:var(--muted);padding:.3rem">${d}</div>`;
+    });
+
+    // Empty cells before first day
+    for (let i = 0; i < firstDay; i++) html += '<div></div>';
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayPosts = byDay[d] || [];
+      const isToday = d === now.getDate() && pcMonth === now.getMonth() + 1 && pcYear === now.getFullYear();
+      html += `<div style="min-height:70px;border:1px solid var(--line);border-radius:6px;padding:.25rem;${isToday ? 'background:rgba(249,115,22,.05);border-color:var(--accent)' : ''}">
+        <div style="font-size:.7rem;font-weight:${isToday ? '800' : '600'};color:${isToday ? 'var(--accent)' : 'var(--muted)'};margin-bottom:.15rem">${d}</div>
+        ${dayPosts.slice(0, 3).map(p => {
+          const colors = { facebook: '#1877f2', instagram: '#e4405f', x: '#1da1f2' };
+          const bg = colors[p.platform] || '#6b7280';
+          return `<div style="font-size:.6rem;padding:.1rem .3rem;border-radius:3px;background:${bg};color:#fff;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(p.content)}">${esc(p.content.slice(0, 20))}</div>`;
+        }).join('')}
+        ${dayPosts.length > 3 ? `<div style="font-size:.55rem;color:var(--muted)">+${dayPosts.length - 3} more</div>` : ''}
+      </div>`;
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  } catch (err) {
+    el.innerHTML = `<div class="card" style="color:#ef4444">${esc(err.message)}</div>`;
+  }
+}
+
+/* ── Batch Schedule ── */
+async function batchScheduleDrafts() {
+  if (!getToken()) { showToast('Sign in first'); return; }
+
+  let accounts = [];
+  try {
+    const data = await api('/social/accounts');
+    accounts = (data.accounts || []).filter(a => a.status === 'connected');
+  } catch { /* ignore */ }
+
+  if (!accounts.length) { showToast('Connect a social account first'); switchView('connections'); return; }
+
+  // Get draft posts
+  let drafts = [];
+  try {
+    const data = await api('/posts?status=draft');
+    drafts = data.posts || [];
+  } catch { /* ignore */ }
+
+  if (!drafts.length) { showToast('No draft posts to schedule'); return; }
+
+  const accountOpts = accounts.map(a => `<option value="${a.id}">${esc(a.displayName)} (${a.provider})</option>`).join('');
+
+  openModal(`
+    <h3>Schedule ${drafts.length} Draft Posts</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">Auto-schedule draft posts at optimal times across multiple days.</p>
+    <div class="form-group"><label>Social Account</label><select id="bsAccount">${accountOpts}</select></div>
+    <div class="form-group"><label>Start Date</label><input type="date" id="bsStart" value="${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}"></div>
+    <div class="form-group"><label>Posts per Day</label><input type="number" id="bsPerDay" value="3" min="1" max="10"></div>
+    <p style="font-size:.72rem;color:var(--muted)">Posts will be spread across ${Math.ceil(drafts.length / 3)} days at 9am, 12:30pm, and 5pm UTC.</p>
+    <div id="bsStatus" style="margin-top:.5rem;font-size:.8rem"></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="doBatchSchedule(${JSON.stringify(drafts.map(d => d.id)).replace(/"/g, '&quot;')})">Schedule All</button>
+    </div>
+  `);
+}
+
+async function doBatchSchedule(postIds) {
+  const status = document.getElementById('bsStatus');
+  status.textContent = 'Scheduling...';
+  status.style.color = 'var(--muted)';
+  try {
+    const data = await api('/posts/batch-schedule', { method: 'POST', body: {
+      postIds,
+      socialAccountId: document.getElementById('bsAccount').value,
+      startDate: document.getElementById('bsStart').value + 'T09:00:00Z',
+      postsPerDay: parseInt(document.getElementById('bsPerDay').value, 10) || 3,
+    }});
+    status.style.color = '#16a34a';
+    status.textContent = `Scheduled ${data.scheduled} posts across ${data.totalDays} days!`;
+    showToast(`${data.scheduled} posts scheduled`);
+    setTimeout(() => { closeModal(); renderPostHistory(); }, 1500);
+  } catch (err) {
+    status.style.color = '#ef4444';
+    status.textContent = err.message;
+  }
+}
+
 /* ── Init ── */
+renderAuthBar();
 updateApiBadge();
-switchView('campaigns');
+// Check for OAuth callback params
+const urlParams = new URLSearchParams(location.search);
+if (urlParams.get('social') === 'connected') {
+  showToast('Social account connected!');
+  history.replaceState(null, '', location.pathname);
+  switchView('connections');
+} else {
+  switchView('dashboard');
+}
 window.addEventListener('resize', () => { if (currentView === 'analytics') drawEngagementChart(); });
 </script>
 </body>

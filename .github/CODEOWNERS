@@ -1,0 +1,9 @@
+* @serge-ivo
+
+/packages/backend/ @serge-ivo
+/packages/agent-brain/ @serge-ivo
+/packages/social/ @serge-ivo
+/packages/backend/schema.sql @serge-ivo
+/packages/backend/migrations/ @serge-ivo
+/packages/*/wrangler.toml @serge-ivo
+/.github/ @serge-ivo

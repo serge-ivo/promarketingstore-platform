@@ -87,10 +87,7 @@ export async function createSession(
   return `${body}.${sig}`;
 }
 
-export async function verifySession(
-  token: string,
-  signingKey: string,
-): Promise<SessionClaims | null> {
+export async function verifySession(token: string, signingKey: string): Promise<SessionClaims | null> {
   try {
     const dot = token.lastIndexOf('.');
     if (dot < 0) return null;
@@ -151,10 +148,7 @@ interface GoogleProfile {
   picture?: string;
 }
 
-export async function exchangeGoogleCode(
-  code: string,
-  env: Env,
-): Promise<GoogleProfile | null> {
+export async function exchangeGoogleCode(code: string, env: Env): Promise<GoogleProfile | null> {
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.wrangler/
+.vibe-check/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo

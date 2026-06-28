@@ -56,8 +56,6 @@ CREATE TABLE IF NOT EXISTS social_accounts (
   display_name TEXT NOT NULL,
   access_token_encrypted TEXT NOT NULL,
   access_token_iv TEXT NOT NULL,
-  refresh_token_encrypted TEXT,
-  refresh_token_iv TEXT,
   scopes TEXT NOT NULL DEFAULT '[]',
   token_expires_at TEXT,
   status TEXT NOT NULL DEFAULT 'connected',
@@ -71,7 +69,6 @@ CREATE TABLE IF NOT EXISTS oauth_states (
   user_id TEXT NOT NULL REFERENCES users(id),
   provider TEXT NOT NULL,
   return_to TEXT,
-  metadata TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   expires_at TEXT NOT NULL
 );
@@ -182,60 +179,3 @@ CREATE TABLE IF NOT EXISTS cost_ledger (
   cost_usd REAL NOT NULL DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
-
--- Standalone posts (not campaign-bound). Phase 1 posting engine.
-CREATE TABLE IF NOT EXISTS posts (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id),
-  social_account_id TEXT REFERENCES social_accounts(id),
-  campaign_id TEXT REFERENCES campaigns(id),
-  platform TEXT NOT NULL,
-  content TEXT NOT NULL,
-  media_key TEXT,
-  media_type TEXT,
-  scheduled_for TEXT,
-  posted_at TEXT,
-  platform_post_id TEXT,
-  status TEXT NOT NULL DEFAULT 'draft',
-  error TEXT,
-  retry_count INTEGER NOT NULL DEFAULT 0,
-  caption_hash TEXT,
-  source_content_id TEXT REFERENCES source_content(id),
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now'))
-);
-
-CREATE INDEX IF NOT EXISTS idx_posts_scheduled ON posts(status, scheduled_for);
-CREATE INDEX IF NOT EXISTS idx_posts_user ON posts(user_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_posts_dedup ON posts(social_account_id, caption_hash);
-
--- Content sources: websites, Slack channels, Teams channels
-CREATE TABLE IF NOT EXISTS sources (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id),
-  type TEXT NOT NULL,
-  name TEXT NOT NULL,
-  config TEXT NOT NULL,
-  last_scanned_at TEXT,
-  scan_frequency TEXT DEFAULT 'daily',
-  status TEXT NOT NULL DEFAULT 'active',
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now'))
-);
-
-CREATE INDEX IF NOT EXISTS idx_sources_user ON sources(user_id);
-
--- Raw content items extracted from sources
-CREATE TABLE IF NOT EXISTS source_content (
-  id TEXT PRIMARY KEY,
-  source_id TEXT NOT NULL REFERENCES sources(id),
-  user_id TEXT NOT NULL REFERENCES users(id),
-  title TEXT,
-  body TEXT NOT NULL,
-  url TEXT,
-  content_hash TEXT NOT NULL,
-  extracted_at TEXT DEFAULT (datetime('now')),
-  UNIQUE(source_id, content_hash)
-);
-
-CREATE INDEX IF NOT EXISTS idx_source_content_source ON source_content(source_id, extracted_at);

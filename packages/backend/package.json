@@ -3,14 +3,20 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:migrate:local": "wrangler d1 migrations apply pms --local",
+    "db:migrate:prod": "wrangler d1 migrations apply pms --remote",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"
   },
   "dependencies": {
+    "@pms/social": "workspace:*",
     "hono": "^4.4.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241018.0",
-    "wrangler": "^3.91.0"
+    "@cloudflare/workers-types": "^4.20260610.1",
+    "wrangler": "^4.99.0"
   }
 }

@@ -13,7 +13,8 @@
  */
 
 import { Hono } from 'hono';
-import { requireUser, HttpError } from './auth.js';
+import { HttpError, requireUser } from './auth.js';
+import { decryptAesGcm, encryptAesGcm } from './crypto-gcm.js';
 import type { Env } from './types.js';
 
 type AppEnv = { Bindings: Env };
@@ -30,58 +31,12 @@ const PROVIDERS = [
   { id: 'stability', name: 'Stability AI', prefix: 'sk-' },
 ] as const;
 
-// ── AES-256-GCM encryption ──────────────────────────────────────────
-
-const IV_LENGTH = 12;
-
-async function deriveKey(secret: string): Promise<CryptoKey> {
-  const raw = new TextEncoder().encode(secret);
-  const hash = await crypto.subtle.digest('SHA-256', raw);
-  return crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, [
-    'encrypt',
-    'decrypt',
-  ]);
+export async function encryptKey(plaintext: string, secret: string): Promise<{ ciphertext: string; iv: string }> {
+  return encryptAesGcm(plaintext, secret);
 }
 
-export async function encryptKey(
-  plaintext: string,
-  secret: string,
-): Promise<{ ciphertext: string; iv: string }> {
-  const key = await deriveKey(secret);
-  const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
-  const encoded = new TextEncoder().encode(plaintext);
-  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
-  return {
-    ciphertext: uint8ToBase64(new Uint8Array(encrypted)),
-    iv: uint8ToBase64(iv),
-  };
-}
-
-export async function decryptKey(
-  ciphertext: string,
-  iv: string,
-  secret: string,
-): Promise<string> {
-  const key = await deriveKey(secret);
-  const decrypted = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: base64ToUint8(iv) },
-    key,
-    base64ToUint8(ciphertext),
-  );
-  return new TextDecoder().decode(decrypted);
-}
-
-function uint8ToBase64(bytes: Uint8Array): string {
-  let bin = '';
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin);
-}
-
-function base64ToUint8(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
+export async function decryptKey(ciphertext: string, iv: string, secret: string): Promise<string> {
+  return decryptAesGcm(ciphertext, iv, secret);
 }
 
 // ── Routes ───────────────────────────────────────────────────────────
@@ -94,9 +49,7 @@ keysRoutes.get('/keys/providers', (c) => {
 
 keysRoutes.get('/keys/status', async (c) => {
   const user = await requireUser(c);
-  const rows = await c.env.DB.prepare(
-    'SELECT provider, created_at FROM keys WHERE user_id = ?',
-  )
+  const rows = await c.env.DB.prepare('SELECT provider, created_at FROM keys WHERE user_id = ?')
     .bind(user.uid)
     .all<{ provider: string; created_at: string }>();
   return c.json({
@@ -147,9 +100,7 @@ keysRoutes.delete('/keys/:provider', async (c) => {
   const user = await requireUser(c);
   const provider = c.req.param('provider');
 
-  const result = await c.env.DB.prepare(
-    'DELETE FROM keys WHERE user_id = ? AND provider = ?',
-  )
+  const result = await c.env.DB.prepare('DELETE FROM keys WHERE user_id = ? AND provider = ?')
     .bind(user.uid, provider)
     .run();
 
@@ -160,9 +111,7 @@ keysRoutes.get('/keys/resolve/:provider', async (c) => {
   const user = await requireUser(c);
   const provider = c.req.param('provider');
 
-  const row = await c.env.DB.prepare(
-    'SELECT encrypted_key, iv FROM keys WHERE user_id = ? AND provider = ?',
-  )
+  const row = await c.env.DB.prepare('SELECT encrypted_key, iv FROM keys WHERE user_id = ? AND provider = ?')
     .bind(user.uid, provider)
     .first<{ encrypted_key: string; iv: string }>();
 
