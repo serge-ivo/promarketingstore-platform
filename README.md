@@ -12,6 +12,17 @@ ProMarketingStore is the paid tier of FreeMarketingStore. While FreeMarketingSto
 4. **Prompt Campaign Services** — "Launch my SaaS in 30 days" → full campaign planned and executed
 5. **Analytics Dashboard** — real-time metrics across all channels, AI-powered insights
 
+## Boundary with FreeMarketingStore
+
+FreeMarketingStore can have free sign-in. The boundary is not accounts vs no accounts; it is diagnostics vs execution.
+
+- **FMS** stores free marketing intelligence: saved sites, audits, Search Console setup, readiness scores, and issue prompts.
+- **PMS** runs paid marketing execution: campaign agents, connected social accounts, scheduled publishing, email sending, analytics, optimization, and marketplace services.
+
+PMS should consume FMS readiness data when starting a campaign, but it should not duplicate FMS as a toolbox.
+
+See [docs/product-boundary.md](docs/product-boundary.md).
+
 ## Architecture (follows PAS pattern)
 
 ```
