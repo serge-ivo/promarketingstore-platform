@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "@pms/social": "workspace:*",
-    "hono": "^4.4.0"
+    "hono": "^4.12.29"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260610.1",
-    "wrangler": "^4.99.0"
+    "wrangler": "^4.110.0"
   }
 }
